@@ -10,10 +10,10 @@ import java.io.PrintWriter;
 import java.util.Date;
 import java.util.regex.Pattern;
 
-@Component
+//@Component
 public class RateLimiterFilter implements Filter {
 
-    private final int maxRequestsPerTimePeriod = 10; // 50 requests per time period
+    private final int maxRequestsPerTimePeriod = 50; // 50 requests per time period
     private final int timePeriodInMs = 30000; // 30 seconds
     private final int bandTimeInMs = 300000; // band for 5 minutes
     private final String whiteListIPRegex = "^([01]?[0-9]{1,2}|2[0-4][0-9]|25[0-5])$";
@@ -59,6 +59,7 @@ public class RateLimiterFilter implements Filter {
             PrintWriter out = servletResponse.getWriter();
             out.write("Rate Limit Exceeded");
             servletContext.log("Blocked IP: " + ipAddress);
+            fc.doFilter(request, response);
         } else {
             fc.doFilter(request, response);
         }
