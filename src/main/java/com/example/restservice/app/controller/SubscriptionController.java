@@ -1,15 +1,15 @@
 package com.example.restservice.app.controller;
 
 import com.example.restservice.app.model.Subscription;
-import com.example.restservice.app.service.PatternValidatorService;
+import com.example.restservice.app.service.PatternValidator;
 import com.example.restservice.app.service.SubscriptionService;
 import com.example.restservice.app.service.ValidateType;
-import org.hibernate.exception.ConstraintViolationException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
+import java.math.BigInteger;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -17,12 +17,12 @@ import java.util.Map;
 @RequestMapping("/api/v1/items")
 public class SubscriptionController {
 
-    private final PatternValidatorService patternValidatorService;
+    private final PatternValidator patternValidatorService;
 
     private final SubscriptionService subscriptionService;
 
     @Autowired
-    public SubscriptionController(PatternValidatorService emailValidator, SubscriptionService subscriptionService) {
+    public SubscriptionController(PatternValidator emailValidator, SubscriptionService subscriptionService) {
         this.patternValidatorService = emailValidator;
         this.subscriptionService = subscriptionService;
     }
@@ -53,7 +53,7 @@ public class SubscriptionController {
         }
         Map<String, Object> result = new HashMap<>();
         try {
-            Page<Subscription> userSubscriptions = this.subscriptionService.getUserSubscription(userId, page, limit);
+            Page<Subscription> userSubscriptions = this.subscriptionService.getUserSubscriptions(userId, page, limit);
             result.put("subscriptions", userSubscriptions);
             result.put("userId", userId);
         } catch (Exception exception) {
@@ -65,53 +65,68 @@ public class SubscriptionController {
     }
 
     @PostMapping("/subscribe")
-    public String subscribe(@RequestHeader(name = "Host", required = false) final String host,
-                            @RequestBody Map<String, String> payload) {
+    @ResponseBody
+    public Map<String, Object> subscribe(@RequestHeader(name = "Host", required = false) final String host,
+                                         @RequestBody Map<String, String> payload) {
         final String email = payload.get("email");
+        String s;
         if (!patternValidatorService.isValid(email, ValidateType.EMAIL)) {
-            return "invalid email:" + email;
+            s = "invalid email:" + email;
+        } else {
+            final String avitoItemUrl = payload.get("url");
+            if (!patternValidatorService.isValid(avitoItemUrl, ValidateType.URL)) {
+                s = "invalid url: " + avitoItemUrl;
+            } else {
+                s  = subscriptionService.subscribe(email, avitoItemUrl, host);
+            }
         }
 
-        final String avitoItemUrl = payload.get("url");
-        if (!patternValidatorService.isValid(avitoItemUrl, ValidateType.URL)) {
-            return "invalid url: " + avitoItemUrl;
-        }
+        Map<String, Object> result = new HashMap<>();
+        result.put("message", s);
 
-        return subscriptionService.subscribe(email, avitoItemUrl, host);
+        return result;
     }
 
     @PostMapping("/{itemId}/{userId}/unsubscribe")
-    public String unsubscribe(@PathVariable(name = "userId") String userId,
-                              @PathVariable(name = "itemId") String itemId,
-                              @RequestHeader(name = "Host", required = false) final String host) {
+    @ResponseBody
+    public Map<String, Object> unsubscribe(@PathVariable(name = "userId") String userId,
+                                           @PathVariable(name = "itemId") String itemId) {
+        Map<String, Object> result = new HashMap<>();
         try {
             final boolean success = subscriptionService.unsubscribe(itemId, Long.parseLong(userId));
 
             if (success) {
-                return "success cancel subscription";
+                result.put("status", "success");
+                result.put("message", "success cancel subscription");
             }
-        } catch (ConstraintViolationException exception) {
+        } catch (Exception exception) {
             exception.printStackTrace();
-        } catch (Exception e) {
-            e.printStackTrace();
-            return e.getMessage();
+            result.put("status", "failed");
+            result.put("message", "failed cancel subscription");
         }
 
-        return "failed";
+        return result;
     }
 
     @GetMapping("/{itemId}/{userId}/confirm")
-    public String confirm(@PathVariable(name = "userId") String userId,
-                          @PathVariable(name = "itemId") String itemId,
-                          @RequestParam("verificationCode") String verificationCode) {
+    @ResponseBody
+    public Map<String, Object> confirm(@PathVariable(name = "userId") String userId,
+                                       @PathVariable(name = "itemId") String itemId,
+                                       @RequestParam("verificationCode") String verificationCode) {
+        Map<String, Object> result = new HashMap<>();
         try {
             System.out.println(itemId + " " + userId + " " + verificationCode);
 
-            final boolean successVerification = subscriptionService.confirmSubscription(itemId, userId, verificationCode);
-            return (successVerification ? "success" : "failed") + " verified your email";
+            final BigInteger userId1 = BigInteger.valueOf(Long.parseLong(userId));
+            final boolean successVerification = subscriptionService.confirmSubscription(itemId, verificationCode, userId1);
+            result.put("status", (successVerification ? "success" : "failed"));
+            result.put("message", (successVerification ? "success" : "failed") + " verified your email");
         } catch (Exception exception) {
             exception.printStackTrace();
-            return exception.getMessage();
+            result.put("status", "failed");
+            result.put("message", "failed verified your email");
         }
+
+        return result;
     }
 }

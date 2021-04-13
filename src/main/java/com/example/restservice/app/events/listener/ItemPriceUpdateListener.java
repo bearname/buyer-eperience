@@ -3,16 +3,16 @@ package com.example.restservice.app.events.listener;
 import com.example.restservice.app.events.event.OnItemPriceUpdateEvent;
 import com.example.restservice.app.model.Item;
 import com.example.restservice.app.model.Subscription;
-import com.example.restservice.app.service.MailerService;
+import com.example.restservice.app.service.MailService;
 import org.springframework.context.ApplicationListener;
 import org.springframework.stereotype.Component;
 
 @Component
 public class ItemPriceUpdateListener implements ApplicationListener<OnItemPriceUpdateEvent> {
 
-    private final MailerService mailerService;
+    private final MailService mailerService;
 
-    public ItemPriceUpdateListener(MailerService mailerService) {
+    public ItemPriceUpdateListener(MailService mailerService) {
         this.mailerService = mailerService;
     }
 

@@ -8,11 +8,11 @@ import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.stereotype.Service;
 
 @Service
-public class MailerService {
+public class JavaMailSenderMailerService implements MailService{
     private final JavaMailSender mailSender;
 //    private static final Logger log = LoggerFactory.getLogger(MailerService.class);
 
-    public MailerService(JavaMailSender mailSender) {
+    public JavaMailSenderMailerService(JavaMailSender mailSender) {
         this.mailSender = mailSender;
     }
 
