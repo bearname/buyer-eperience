@@ -3,15 +3,24 @@ package com.example.restservice.app.controller;
 import com.example.restservice.app.model.Item;
 import com.example.restservice.app.model.Subscription;
 import com.example.restservice.app.model.User;
+import com.example.restservice.app.repository.ItemRepository;
+import com.example.restservice.app.repository.SubscriptionRepository;
+import com.example.restservice.app.repository.UserRepository;
 import com.example.restservice.app.service.SubscriptionService;
+import com.example.restservice.inrostructure.net.avitoclient.AvitoClient;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.http.MediaType;
+import org.springframework.test.context.TestPropertySource;
+import org.springframework.test.context.jdbc.Sql;
+import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.math.BigInteger;
@@ -27,6 +36,9 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 
 @SpringBootTest
 @AutoConfigureMockMvc
+@TestPropertySource("/application-test.properties")
+//@Sql(value = {"create-entity-before.sql"}, executionPhase = Sql.ExecutionPhase.BEFORE_TEST_METHOD)
+//@Sql(value = {"delete-entity-after.sql"}, executionPhase = Sql.ExecutionPhase.AFTER_TEST_METHOD)
 class SubscriptionControllerTest {
 
     @MockBean
@@ -34,6 +46,10 @@ class SubscriptionControllerTest {
 
     @Autowired
     private MockMvc mockMvc;
+
+    @Autowired
+    private SubscriptionController subscriptionController;
+
     public static final PageImpl<Subscription> EMPTY = new PageImpl<>(new ArrayList<>());
 
     @Test
@@ -279,6 +295,29 @@ class SubscriptionControllerTest {
                 .andExpect(jsonPath("$.success", is(false)))
                 .andExpect(jsonPath("$.message", is("Failed verified your email")))
                 .andReturn();
+    }
+
+    class MockService implements SubscriptionService {
+
+        @Override
+        public String subscribe(String email, String itemUrl, String host) {
+            return null;
+        }
+
+        @Override
+        public boolean unsubscribe(String itemId, long userId) throws Exception {
+            return false;
+        }
+
+        @Override
+        public boolean confirmSubscription(String itemId, String verificationCode, BigInteger userId) throws Exception {
+            return false;
+        }
+
+        @Override
+        public Page<Subscription> getUserSubscriptions(Long userId, Integer page, Integer limit) throws Exception {
+            return null;
+        }
     }
 
     @Test
