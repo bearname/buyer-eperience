@@ -25,7 +25,8 @@
 - Подтверждение email пользователя.
 
 #Dependencies
-1) [java11](https://www.oracle.com/java/technologies/javase-jdk11-downloads.html) latest
+1) [java11](https://www.oracle.com/java/technologies/javase-jdk11-downloads.html) latest 
+set `JAVA_HOME` environment variable to java installation path
 2) [Postgresql server 11](https://www.postgresql.org/download/) latest
 
 #Preparation smtp server
@@ -39,30 +40,30 @@ Go to gmail.com > setting > see all settings > forwarding and pop/imap > enable 
 ##Gradle usage:
 # Build
 1) `cd` project root
-2) gradlew build
+2) `gradlew build`
 # Run
- java -jar build\libs\*.jar 
+ `java -jar build\libs\*.jar `
 
 # Test
 Test running with jacoco code coverage analysis
 
-gradlew test
+`gradlew test`
 
 jacoco result available at the build/jacocoHtml/index.html
 
 ##Docker usage:
-1. docker build -t {your-hub-username}/{package-name} .
-2. docker run -p 8080:8080 {your-hub-username}/{package-name}
+1. `docker build -t {your-hub-username}/{package-name} .`
+2. `docker run -p 8080:8080 {your-hub-username}/{package-name}`
 
 ##Docker composer usage:
-docker-composer up 
+`docker-composer up `
 this command run
  one nginx instance container as load balancer at 4000 port
  one postgres server instance container  at 5432 port
  one application backend server instance 
 
 #Scale
-docker-composer up --scale app={instance count} db={instance count}
+`docker-composer up --scale app={instance count} db={instance count}`
 
 ##Docs
 ![db-diagram](/docs/images/db-diagram.jpg)
