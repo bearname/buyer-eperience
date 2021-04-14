@@ -28,18 +28,18 @@ import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMock
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.web.servlet.MockMvc;
 
-@SpringBootTest
-@AutoConfigureMockMvc
-public class GreetingControllerTests {
-
-	@Autowired
-	private MockMvc mockMvc;
+//@SpringBootTest
+//@AutoConfigureMockMvc
+//public class GreetingControllerTests {
 //
+//	@Autowired
+//	private MockMvc mockMvc;
+
 //	@Test
 //	public void noParamGreetingShouldReturnDefaultMessage() throws Exception {
 //		assertTrue(true);
-////		this.mockMvc.perform(get("/greeting")).andDo(print()).andExpect(status().isOk())
-////				.andExpect(jsonPath("$.content").value("Hello, World!"));
+//		this.mockMvc.perform(get("/greeting")).andDo(print()).andExpect(status().isOk())
+//				.andExpect(jsonPath("$.content").value("Hello, World!"));
 //	}
 //
 //	@Test
@@ -52,4 +52,4 @@ public class GreetingControllerTests {
 ////				.andExpect(jsonPath("$.content").value("Hello, Spring Community!"));
 //	}
 
-}
+//}

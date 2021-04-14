@@ -75,7 +75,7 @@ public class SubscriptionServiceImpl implements SubscriptionService{
             return false;
         }
         if (subscription.isVerified()) {
-            throw new Exception("subscription already verified");
+            throw new Exception("Subscription already verified");
         }
 
         subscription.setVerified(true);

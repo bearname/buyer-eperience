@@ -6,6 +6,8 @@ import com.example.restservice.app.service.SubscriptionService;
 import com.example.restservice.app.service.ValidateType;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import javax.servlet.http.HttpServletRequest;
@@ -17,6 +19,8 @@ import java.util.Map;
 @RequestMapping("/api/v1/items")
 public class SubscriptionController {
 
+    public static final int DEFAULT_PAGE = 0;
+    public static final int DEFAULT_PAGE_LIMIT = 10;
     private final PatternValidator patternValidatorService;
 
     private final SubscriptionService subscriptionService;
@@ -29,91 +33,122 @@ public class SubscriptionController {
 
     @GetMapping(path = "/{userId}")
     @ResponseBody
-    public Map<String, Object> userSubscription(@PathVariable("userId") Long userId,
-                                                @RequestParam(value = "page", required = false) Integer page,
-                                                @RequestParam(value = "limit", required = false) Integer limit,
-                                                @RequestHeader(name = "Host", required = false) final String host,
-                                                HttpServletRequest request) {
+    public ResponseEntity<Object> userSubscription(@PathVariable("userId") Long userId,
+                                                   @RequestParam(value = "page", required = false) Integer page,
+                                                   @RequestParam(value = "limit", required = false) Integer limit,
+                                                   @RequestHeader(name = "Host", required = false) final String host,
+                                                   HttpServletRequest request) {
         System.out.println(request);
         System.out.println("======================");
         System.out.println("======================");
         System.out.println("======================");
-        System.out.println( request.getLocalName());
-        System.out.println( request.getContextPath());
-        System.out.println( request.getLocalAddr());
-        System.out.println( request.getRemoteUser());
-        System.out.println( request.getRemoteUser());
+        System.out.println(request.getLocalName());
+        System.out.println(request.getContextPath());
+        System.out.println(request.getLocalAddr());
+        System.out.println(request.getRemoteUser());
+        System.out.println(request.getRemoteUser());
         System.out.println("Host " + host);
         System.out.println("======================");
         System.out.println("======================");
         System.out.println("======================");
-        if (page == null && limit == null) {
-            page = 0;
-            limit = 10;
+
+        if (page == null || page < 0) {
+            page = DEFAULT_PAGE;
         }
+        if (limit == null || limit < 0) {
+            limit = DEFAULT_PAGE_LIMIT;
+        }
+
         Map<String, Object> result = new HashMap<>();
         try {
             Page<Subscription> userSubscriptions = this.subscriptionService.getUserSubscriptions(userId, page, limit);
+
             result.put("subscriptions", userSubscriptions);
             result.put("userId", userId);
+            result.put("success", true);
+            return ResponseEntity
+                    .ok()
+                    .body(result);
         } catch (Exception exception) {
-            exception.printStackTrace();
-            result.put("status", "Unknown user " + userId);
+            result.put("success", false);
+            result.put("message", "Unknown user with id " + userId);
         }
 
-        return result;
+        return ResponseEntity.notFound().build();
     }
 
     @PostMapping("/subscribe")
     @ResponseBody
-    public Map<String, Object> subscribe(@RequestHeader(name = "Host", required = false) final String host,
-                                         @RequestBody Map<String, String> payload) {
+    public ResponseEntity<Object> subscribe(@RequestHeader(name = "Host", required = false) final String host,
+                                            @RequestBody Map<String, String> payload) {
         final String email = payload.get("email");
-        String s;
+        String message;
+        Map<String, Object> result = new HashMap<>();
         if (!patternValidatorService.isValid(email, ValidateType.EMAIL)) {
-            s = "invalid email:" + email;
-        } else {
-            final String avitoItemUrl = payload.get("url");
-            if (!patternValidatorService.isValid(avitoItemUrl, ValidateType.URL)) {
-                s = "invalid url: " + avitoItemUrl;
-            } else {
-                s  = subscriptionService.subscribe(email, avitoItemUrl, host);
+            message = "Invalid email";
+            if (email != null) {
+                message += ": "  + email;
             }
+
+            result.put("message", message);
+            result.put("success", false);
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(result);
         }
 
-        Map<String, Object> result = new HashMap<>();
-        result.put("message", s);
+        final String avitoItemUrl = payload.get("url");
+        if (!patternValidatorService.isValid(avitoItemUrl, ValidateType.URL)) {
+            message = "Invalid url";
+            if (avitoItemUrl != null) {
+                message += ": "  + avitoItemUrl;
+            }
+            result.put("message", message);
+            result.put("success", false);
+            return ResponseEntity
+                    .status(HttpStatus.BAD_REQUEST)
+                    .body(result);
+        }
 
-        return result;
+        message = subscriptionService.subscribe(email, avitoItemUrl, host);
+
+        result.put("success", true);
+        result.put("message", message);
+
+        return ResponseEntity
+                .ok()
+                .body(result);
     }
 
     @PostMapping("/{itemId}/{userId}/unsubscribe")
     @ResponseBody
-    public Map<String, Object> unsubscribe(@PathVariable(name = "userId") String userId,
+    public ResponseEntity<Object> unsubscribe(@PathVariable(name = "userId") String userId,
                                            @PathVariable(name = "itemId") String itemId) {
         Map<String, Object> result = new HashMap<>();
         try {
             final boolean success = subscriptionService.unsubscribe(itemId, Long.parseLong(userId));
 
             if (success) {
-                result.put("status", "success");
-                result.put("message", "success cancel subscription");
+                result.put("success", true);
+                result.put("message", "Success cancel subscription");
             } else {
-                result.put("status", "failed");
-                result.put("message", "failed cancel subscription");
+                result.put("success", false);
+                result.put("message", "Failed cancel subscription");
             }
         } catch (Exception exception) {
             exception.printStackTrace();
-            result.put("status", "failed");
-            result.put("message", "failed cancel subscription");
+            result.put("success", false);
+            result.put("message", "Failed cancel subscription");
         }
 
-        return result;
+        return ResponseEntity
+                .ok()
+                .body(result);
     }
 
     @GetMapping("/{itemId}/{userId}/confirm")
     @ResponseBody
-    public Map<String, Object> confirm(@PathVariable(name = "userId") String userId,
+    public ResponseEntity<Object> confirm(@PathVariable(name = "userId") String userId,
                                        @PathVariable(name = "itemId") String itemId,
                                        @RequestParam("verificationCode") String verificationCode) {
         Map<String, Object> result = new HashMap<>();
@@ -122,14 +157,16 @@ public class SubscriptionController {
 
             final BigInteger userId1 = BigInteger.valueOf(Long.parseLong(userId));
             final boolean successVerification = subscriptionService.confirmSubscription(itemId, verificationCode, userId1);
-            result.put("status", (successVerification ? "success" : "failed"));
-            result.put("message", (successVerification ? "success" : "failed") + " verified your email");
+            result.put("success", successVerification);
+            result.put("message", (successVerification ? "Success" : "Failed") + " verified your email");
         } catch (Exception exception) {
             exception.printStackTrace();
-            result.put("status", "failed");
-            result.put("message", "failed verified your email");
+            result.put("success", false);
+            result.put("message", "Failed verified your email");
         }
 
-        return result;
+        return ResponseEntity
+                .ok()
+                .body(result);
     }
 }

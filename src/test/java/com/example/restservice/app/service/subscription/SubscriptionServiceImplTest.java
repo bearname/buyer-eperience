@@ -63,7 +63,6 @@ class SubscriptionServiceImplTest {
 
     @Test
     public void failedGetNewPrice1() {
-        final AvitoBaseException aviatorApiException = new AvitoBaseException("Avito Api excpetion");
         try {
             final String subscriptionUrl = "https://www.avito.ru/kazan/tovary_dlya_kompyutera/asus_gaming_vg248qg_2112597286";
             final String userEmail = "test@mail.com";
@@ -464,7 +463,7 @@ class SubscriptionServiceImplTest {
             final SubscriptionService subscriptionService = new SubscriptionServiceImpl(applicationEventPublisher, userRepository, itemRepository, subscriptionRepository, avitoClient);
             final boolean unsubscribe = subscriptionService.confirmSubscription(itemId, verificationCode, BigInteger.valueOf(1L));
         } catch (Exception exception) {
-            assertEquals("subscription already verified", exception.getMessage());
+            assertEquals("Subscription already verified", exception.getMessage());
         }
     }
 

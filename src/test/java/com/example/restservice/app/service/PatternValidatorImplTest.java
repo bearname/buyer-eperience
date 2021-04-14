@@ -29,6 +29,10 @@ class PatternValidatorImplTest {
         assertTrue(patternValidator.isValid("test@google.com", ValidateType.EMAIL));
     }
 
+    @Test
+    public void whenValidEmail1() {
+        assertTrue(patternValidator.isValid("ya.mikushoff@gmail.com", ValidateType.EMAIL));
+    }
 
     @Test
     public void whenNotValidUrl() {

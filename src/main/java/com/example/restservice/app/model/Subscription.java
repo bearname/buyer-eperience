@@ -88,7 +88,8 @@ public final class Subscription {
         if (this == o) return true;
         if (o == null || getClass() != o.getClass()) return false;
         Subscription that = (Subscription) o;
-        return id.equals(that.id);
+
+        return this.getItem().getId().equals(that.getItem().getId()) && this.getUser().getId().equals(that.getItem().getId());
     }
 
     @Override
