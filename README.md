@@ -69,5 +69,5 @@ docker-composer up --scale app={instance count} db={instance count}
 ![code-coverage](/docs/images/code-coverage-jacoco.jpg)
 ![endpoints](/docs/images/swagger-endpoints.jpg)
 
-http://localhost:8080/swagger-ui.html Swagger
+
 [Swagger]http://localhost:8080/swagger-ui.html
