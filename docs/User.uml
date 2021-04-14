@@ -1,0 +1,327 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Diagram>
+  <ID>JAVA</ID>
+  <OriginalElement>com.example.restservice.model.User</OriginalElement>
+  <nodes>
+    <node x="1255.0" y="495.0">com.example.restservice.model.ItemDto</node>
+    <node x="1570.3181216931216" y="330.0">com.example.restservice.events.listener.OnNewSubscriptionListener</node>
+    <node x="2406.3921957671955" y="330.0">com.example.restservice.events.event.OnNewItemSubscriptionEvent</node>
+    <node x="2290.0" y="80.0">java.util.EventObject</node>
+    <node x="1404.0" y="495.0">com.example.restservice.config.Config</node>
+    <node x="2498.0" y="80.0">java.lang.Enum</node>
+    <node x="642.5" y="420.0">com.example.restservice.service.MailerService</node>
+    <node x="60.0" y="240.0">org.springframework.data.repository.Repository</node>
+    <node x="310.0" y="330.0">org.springframework.stereotype.Repository</node>
+    <node x="613.0" y="495.0">javax.persistence.Entity</node>
+    <node x="1602.0" y="240.0">com.example.restservice.exceptitons.FailedSaveUserException</node>
+    <node x="686.0" y="330.0">com.example.restservice.service.PriceUpdateCheckerService</node>
+    <node x="104.0" y="575.0">com.example.restservice.RestServiceApplication</node>
+    <node x="928.0" y="575.0">com.example.restservice.controller.SubscriptionController</node>
+    <node x="1854.0" y="240.0">org.springframework.context.ApplicationListener</node>
+    <node x="1050.0" y="495.0">org.springframework.web.bind.annotation.RestController</node>
+    <node x="1422.0" y="160.0">java.lang.Exception</node>
+    <node x="2286.0" y="0.0">java.io.Serializable</node>
+    <node x="968.0" y="420.0">com.example.restservice.service.PatternValidatorService</node>
+    <node x="1942.6666666666665" y="160.0">java.util.EventListener</node>
+    <node x="2466.0" y="160.0">com.example.restservice.service.ValidateType</node>
+    <node x="457.0" y="575.0">com.example.restservice.model.Subscription</node>
+    <node x="2298.0" y="240.0">com.example.restservice.events.BaseApplicationEvent</node>
+    <node x="721.0" y="575.0">com.example.restservice.model.User</node>
+    <node x="1376.0" y="420.0">com.example.restservice.service.SubscriptionService</node>
+    <node x="1220.0" y="420.0">com.example.restservice.service.UserService</node>
+    <node x="1422.0" y="80.0">java.lang.Throwable</node>
+    <node x="954.0" y="330.0">com.example.restservice.net.NetworkWrapper</node>
+    <node x="870.0" y="495.0">org.springframework.web.bind.annotation.RequestMapping</node>
+    <node x="130.0" y="330.0">org.springframework.data.repository.CrudRepository</node>
+    <node x="208.0" y="240.0">org.springframework.data.repository.NoRepositoryBean</node>
+    <node x="1722.6666666666665" y="160.0">java.lang.FunctionalInterface</node>
+    <node x="180.0" y="420.0">com.example.restservice.repository.SubscriptionRepository</node>
+    <node x="737.0" y="495.0">javax.persistence.Table</node>
+    <node x="1134.0" y="330.0">org.springframework.stereotype.Service</node>
+    <node x="1382.0" y="240.0">com.example.restservice.exceptitons.OutOfRangeException</node>
+    <node x="664.9847883597882" y="160.0">org.springframework.stereotype.Indexed</node>
+    <node x="236.0" y="495.0">org.springframework.scheduling.annotation.EnableScheduling</node>
+    <node x="0.0" y="495.0">org.springframework.boot.autoconfigure.SpringBootApplication</node>
+    <node x="1114.0" y="240.0">com.example.restservice.exceptitons.UserAlreadyExistException</node>
+    <node x="462.5" y="420.0">com.example.restservice.repository.UserRepository</node>
+    <node x="2270.0" y="160.0">org.springframework.context.ApplicationEvent</node>
+    <node x="0.0" y="420.0">com.example.restservice.repository.ItemRepository</node>
+    <node x="974.0" y="240.0">org.springframework.stereotype.Component</node>
+    <node x="458.0" y="330.0">com.example.restservice.service.AvitoItemPriceParser</node>
+    <node x="1910.3921957671955" y="330.0">com.example.restservice.events.listener.ItemPriceUpdateListener</node>
+    <node x="2162.3921957671955" y="330.0">com.example.restservice.events.event.OnItemPriceUpdateEvent</node>
+    <node x="621.0" y="575.0">com.example.restservice.model.Item</node>
+    <node x="2494.0" y="0.0">java.lang.Comparable</node>
+  </nodes>
+  <notes />
+  <edges>
+    <edge source="org.springframework.context.ApplicationListener" target="java.util.EventListener">
+      <point x="0.0" y="-15.0" />
+      <point x="1954.0" y="210.0" />
+      <point x="2018.6666666666665" y="210.0" />
+      <point x="0.0" y="15.0" />
+    </edge>
+    <edge source="com.example.restservice.model.Item" target="javax.persistence.Entity">
+      <point x="0.0" y="-15.0" />
+      <point x="0.0" y="15.0" />
+    </edge>
+    <edge source="org.springframework.stereotype.Component" target="org.springframework.stereotype.Indexed">
+      <point x="0.0" y="-15.0" />
+      <point x="1034.0" y="220.0" />
+      <point x="742.9847883597882" y="220.0" />
+      <point x="26.0" y="15.0" />
+    </edge>
+    <edge source="com.example.restservice.service.ValidateType" target="java.lang.Enum">
+      <point x="0.0" y="-15.0" />
+      <point x="0.0" y="15.0" />
+    </edge>
+    <edge source="org.springframework.data.repository.CrudRepository" target="org.springframework.data.repository.Repository">
+      <point x="-40.0" y="-15.0" />
+      <point x="170.0" y="310.0" />
+      <point x="124.0" y="310.0" />
+      <point x="0.0" y="15.0" />
+    </edge>
+    <edge source="com.example.restservice.RestServiceApplication" target="org.springframework.scheduling.annotation.EnableScheduling">
+      <point x="56.0" y="-15.0" />
+      <point x="272.0" y="550.0" />
+      <point x="324.0" y="550.0" />
+      <point x="0.0" y="15.0" />
+    </edge>
+    <edge source="com.example.restservice.repository.ItemRepository" target="org.springframework.stereotype.Repository">
+      <point x="40.0" y="-15.0" />
+      <point x="120.0" y="400.0" />
+      <point x="331.33333333333326" y="400.0" />
+      <point x="-42.666666666666686" y="15.0" />
+    </edge>
+    <edge source="java.lang.Throwable" target="java.io.Serializable">
+      <point x="0.0" y="-15.0" />
+      <point x="1482.0" y="55.0" />
+      <point x="2310.0" y="55.0" />
+      <point x="-48.0" y="15.0" />
+    </edge>
+    <edge source="com.example.restservice.controller.SubscriptionController" target="org.springframework.web.bind.annotation.RequestMapping">
+      <point x="-56.0" y="-15.0" />
+      <point x="984.0" y="550.0" />
+      <point x="950.0" y="550.0" />
+      <point x="0.0" y="15.0" />
+    </edge>
+    <edge source="com.example.restservice.exceptitons.OutOfRangeException" target="java.lang.Exception">
+      <point x="0.0" y="-15.0" />
+      <point x="0.0" y="15.0" />
+    </edge>
+    <edge source="com.example.restservice.events.listener.ItemPriceUpdateListener" target="org.springframework.context.ApplicationListener">
+      <point x="58.0" y="-15.0" />
+      <point x="2084.3921957671955" y="310.0" />
+      <point x="2004.0" y="310.0" />
+      <point x="50.0" y="15.0" />
+    </edge>
+    <edge source="org.springframework.stereotype.Repository" target="org.springframework.stereotype.Component">
+      <point x="0.0" y="-15.0" />
+      <point x="374.0" y="290.0" />
+      <point x="982.5714285714286" y="290.0" />
+      <point x="-51.428571428571445" y="15.0" />
+    </edge>
+    <edge source="java.lang.Exception" target="java.lang.Throwable">
+      <point x="0.0" y="-15.0" />
+      <point x="0.0" y="15.0" />
+    </edge>
+    <edge source="com.example.restservice.service.PriceUpdateCheckerService" target="org.springframework.stereotype.Component">
+      <point x="0.0" y="-15.0" />
+      <point x="810.0" y="310.0" />
+      <point x="1016.8571428571429" y="310.0" />
+      <point x="-17.14285714285711" y="15.0" />
+    </edge>
+    <edge source="java.lang.Enum" target="java.io.Serializable">
+      <point x="-20.0" y="-15.0" />
+      <point x="2518.0" y="55.0" />
+      <point x="2406.0" y="55.0" />
+      <point x="48.0" y="15.0" />
+    </edge>
+    <edge source="com.example.restservice.service.AvitoItemPriceParser" target="org.springframework.stereotype.Component">
+      <point x="0.0" y="-15.0" />
+      <point x="562.0" y="300.0" />
+      <point x="999.7142857142857" y="300.0" />
+      <point x="-34.285714285714334" y="15.0" />
+    </edge>
+    <edge source="com.example.restservice.repository.ItemRepository" target="org.springframework.data.repository.CrudRepository">
+      <point x="-40.0" y="-15.0" />
+      <point x="40.0" y="390.0" />
+      <point x="156.66666666666674" y="390.0" />
+      <point x="-53.33333333333334" y="15.0" />
+    </edge>
+    <edge source="com.example.restservice.repository.UserRepository" target="org.springframework.stereotype.Repository">
+      <point x="40.0" y="-15.0" />
+      <point x="582.5" y="380.0" />
+      <point x="416.66666666666663" y="380.0" />
+      <point x="42.66666666666663" y="15.0" />
+    </edge>
+    <edge source="com.example.restservice.events.listener.ItemPriceUpdateListener" target="org.springframework.stereotype.Component">
+      <point x="-58.0" y="-15.0" />
+      <point x="1968.3921957671955" y="290.0" />
+      <point x="1085.4285714285713" y="290.0" />
+      <point x="51.42857142857133" y="15.0" />
+    </edge>
+    <edge source="org.springframework.context.ApplicationListener" target="java.lang.FunctionalInterface">
+      <point x="-66.66666666666674" y="-15.0" />
+      <point x="1887.3333333333333" y="220.0" />
+      <point x="1822.6666666666665" y="220.0" />
+      <point x="0.0" y="15.0" />
+    </edge>
+    <edge source="org.springframework.context.ApplicationListener" target="org.springframework.context.ApplicationEvent">
+      <point x="66.66666666666674" y="-15.0" />
+      <point x="2020.6666666666667" y="220.0" />
+      <point x="2314.0" y="220.0" />
+      <point x="-44.0" y="15.0" />
+    </edge>
+    <edge source="com.example.restservice.model.User" target="javax.persistence.Entity">
+      <point x="-20.0" y="-15.0" />
+      <point x="741.0" y="550.0" />
+      <point x="693.0" y="550.0" />
+      <point x="32.0" y="15.0" />
+    </edge>
+    <edge source="com.example.restservice.repository.SubscriptionRepository" target="org.springframework.stereotype.Repository">
+      <point x="56.0" y="-15.0" />
+      <point x="348.0" y="400.0" />
+      <point x="374.0" y="400.0" />
+      <point x="0.0" y="15.0" />
+    </edge>
+    <edge source="com.example.restservice.controller.SubscriptionController" target="org.springframework.web.bind.annotation.RestController">
+      <point x="56.0" y="-15.0" />
+      <point x="1096.0" y="550.0" />
+      <point x="1130.0" y="550.0" />
+      <point x="0.0" y="15.0" />
+    </edge>
+    <edge source="com.example.restservice.service.SubscriptionService" target="org.springframework.stereotype.Service">
+      <point x="0.0" y="-15.0" />
+      <point x="1476.0" y="390.0" />
+      <point x="1225.0" y="390.0" />
+      <point x="39.0" y="15.0" />
+    </edge>
+    <edge source="com.example.restservice.exceptitons.FailedSaveUserException" target="java.lang.Exception">
+      <point x="0.0" y="-15.0" />
+      <point x="1718.0" y="220.0" />
+      <point x="1522.0" y="220.0" />
+      <point x="40.0" y="15.0" />
+    </edge>
+    <edge source="com.example.restservice.service.UserService" target="org.springframework.stereotype.Service">
+      <point x="0.0" y="-15.0" />
+      <point x="1288.0" y="400.0" />
+      <point x="1199.0" y="400.0" />
+      <point x="13.0" y="15.0" />
+    </edge>
+    <edge source="java.lang.Enum" target="java.lang.Comparable">
+      <point x="20.0" y="-15.0" />
+      <point x="0.0" y="15.0" />
+    </edge>
+    <edge source="com.example.restservice.repository.UserRepository" target="org.springframework.data.repository.CrudRepository">
+      <point x="-40.0" y="-15.0" />
+      <point x="502.5" y="390.0" />
+      <point x="263.33333333333326" y="390.0" />
+      <point x="53.33333333333337" y="15.0" />
+    </edge>
+    <edge source="com.example.restservice.exceptitons.UserAlreadyExistException" target="java.lang.Exception">
+      <point x="0.0" y="-15.0" />
+      <point x="1238.0" y="220.0" />
+      <point x="1442.0" y="220.0" />
+      <point x="-40.0" y="15.0" />
+    </edge>
+    <edge source="com.example.restservice.model.Subscription" target="javax.persistence.Entity">
+      <point x="0.0" y="-15.0" />
+      <point x="529.0" y="550.0" />
+      <point x="629.0" y="550.0" />
+      <point x="-32.0" y="15.0" />
+    </edge>
+    <edge source="org.springframework.stereotype.Service" target="org.springframework.stereotype.Component">
+      <point x="0.0" y="-15.0" />
+      <point x="1186.0" y="310.0" />
+      <point x="1051.142857142857" y="310.0" />
+      <point x="17.14285714285711" y="15.0" />
+    </edge>
+    <edge source="com.example.restservice.service.PatternValidatorService" target="org.springframework.stereotype.Service">
+      <point x="0.0" y="-15.0" />
+      <point x="1084.0" y="400.0" />
+      <point x="1173.0" y="400.0" />
+      <point x="-13.0" y="15.0" />
+    </edge>
+    <edge source="com.example.restservice.events.event.OnNewItemSubscriptionEvent" target="com.example.restservice.events.BaseApplicationEvent">
+      <point x="0.0" y="-15.0" />
+      <point x="2534.3921957671955" y="310.0" />
+      <point x="2454.0" y="310.0" />
+      <point x="52.0" y="15.0" />
+    </edge>
+    <edge source="com.example.restservice.model.User" target="javax.persistence.Table">
+      <point x="20.0" y="-15.0" />
+      <point x="0.0" y="15.0" />
+    </edge>
+    <edge source="com.example.restservice.events.event.OnItemPriceUpdateEvent" target="com.example.restservice.events.BaseApplicationEvent">
+      <point x="0.0" y="-15.0" />
+      <point x="2274.3921957671955" y="310.0" />
+      <point x="2350.0" y="310.0" />
+      <point x="-52.0" y="15.0" />
+    </edge>
+    <edge source="com.example.restservice.events.listener.OnNewSubscriptionListener" target="org.springframework.context.ApplicationListener">
+      <point x="62.0" y="-15.0" />
+      <point x="1756.3181216931216" y="310.0" />
+      <point x="1904.0" y="310.0" />
+      <point x="-50.0" y="15.0" />
+    </edge>
+    <edge source="com.example.restservice.events.BaseApplicationEvent" target="org.springframework.context.ApplicationEvent">
+      <point x="0.0" y="-15.0" />
+      <point x="44.0" y="15.0" />
+    </edge>
+    <edge source="org.springframework.context.ApplicationEvent" target="java.util.EventObject">
+      <point x="0.0" y="-15.0" />
+      <point x="0.0" y="15.0" />
+    </edge>
+    <edge source="com.example.restservice.repository.SubscriptionRepository" target="org.springframework.data.repository.CrudRepository">
+      <point x="-56.0" y="-15.0" />
+      <point x="236.0" y="390.0" />
+      <point x="210.0" y="390.0" />
+      <point x="0.0" y="15.0" />
+    </edge>
+    <edge source="com.example.restservice.service.MailerService" target="org.springframework.stereotype.Service">
+      <point x="0.0" y="-15.0" />
+      <point x="718.5" y="390.0" />
+      <point x="1147.0" y="390.0" />
+      <point x="-39.0" y="15.0" />
+    </edge>
+    <edge source="com.example.restservice.RestServiceApplication" target="org.springframework.boot.autoconfigure.SpringBootApplication">
+      <point x="-56.0" y="-15.0" />
+      <point x="160.0" y="550.0" />
+      <point x="108.0" y="550.0" />
+      <point x="0.0" y="15.0" />
+    </edge>
+    <edge source="com.example.restservice.events.listener.OnNewSubscriptionListener" target="org.springframework.stereotype.Component">
+      <point x="-62.0" y="-15.0" />
+      <point x="1632.3181216931216" y="300.0" />
+      <point x="1068.2857142857142" y="300.0" />
+      <point x="34.28571428571422" y="15.0" />
+    </edge>
+    <edge source="org.springframework.data.repository.Repository" target="org.springframework.stereotype.Indexed">
+      <point x="0.0" y="-15.0" />
+      <point x="124.0" y="220.0" />
+      <point x="690.9847883597882" y="220.0" />
+      <point x="-26.0" y="15.0" />
+    </edge>
+    <edge source="java.util.EventObject" target="java.io.Serializable">
+      <point x="0.0" y="-15.0" />
+      <point x="0.0" y="15.0" />
+    </edge>
+    <edge source="org.springframework.data.repository.CrudRepository" target="org.springframework.data.repository.NoRepositoryBean">
+      <point x="40.0" y="-15.0" />
+      <point x="250.0" y="310.0" />
+      <point x="296.0" y="310.0" />
+      <point x="0.0" y="15.0" />
+    </edge>
+    <edge source="com.example.restservice.net.NetworkWrapper" target="org.springframework.stereotype.Component">
+      <point x="0.0" y="-15.0" />
+      <point x="0.0" y="15.0" />
+    </edge>
+  </edges>
+  <settings layout="Hierarchic Group" zoom="0.915989563920984" x="1038.5927327473958" y="499.7629823682979" />
+  <SelectedNodes />
+  <Categories />
+  <SCOPE>All</SCOPE>
+  <VISIBILITY>private</VISIBILITY>
+</Diagram>
+
