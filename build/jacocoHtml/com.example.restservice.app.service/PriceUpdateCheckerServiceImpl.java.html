@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="en"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>PriceUpdateCheckerServiceImpl.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">rest-service</a> &gt; <a href="index.source.html" class="el_package">com.example.restservice.app.service</a> &gt; <span class="el_source">PriceUpdateCheckerServiceImpl.java</span></div><h1>PriceUpdateCheckerServiceImpl.java</h1><pre class="source lang-java linenums">package com.example.restservice.app.service;
+
+import com.example.restservice.app.events.event.OnItemPriceUpdateEvent;
+import com.example.restservice.app.model.Item;
+import com.example.restservice.app.model.ItemDto;
+import com.example.restservice.app.model.Subscription;
+import com.example.restservice.app.model.User;
+import com.example.restservice.app.repository.ItemRepository;
+import com.example.restservice.app.repository.SubscriptionRepository;
+import com.example.restservice.inrostructure.config.Config;
+import com.example.restservice.inrostructure.net.avitoclient.AvitoBaseException;
+import com.example.restservice.inrostructure.net.avitoclient.AvitoClient;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.ApplicationEventPublisher;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.scheduling.annotation.Scheduled;
+import org.springframework.stereotype.Component;
+
+import java.math.BigInteger;
+import java.text.SimpleDateFormat;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Optional;
+import java.util.concurrent.atomic.AtomicBoolean;
+
+@Component
+public class PriceUpdateCheckerServiceImpl implements PriceUpdateCheckerService {
+
+//    private static final Logger log = LoggerFactory.getLogger(PriceUpdaterService.class);
+
+<span class="fc" id="L32">    private static final SimpleDateFormat dateFormat = new SimpleDateFormat(&quot;HH:mm:ss&quot;);</span>
+
+    private final AvitoClient avitoClient;
+    private final SubscriptionRepository subscriptionRepository;
+    private final ItemRepository itemRepository;
+    private final ApplicationEventPublisher eventPublisher;
+<span class="fc" id="L38">    private int pageSize = 100;</span>
+
+    @Autowired
+    public PriceUpdateCheckerServiceImpl(AvitoClient avitoClient,
+                                         SubscriptionRepository subscriptionRepository,
+                                         ItemRepository itemRepository,
+<span class="fc" id="L44">                                         ApplicationEventPublisher eventPublisher) {</span>
+<span class="fc" id="L45">        this.avitoClient = avitoClient;</span>
+<span class="fc" id="L46">        this.subscriptionRepository = subscriptionRepository;</span>
+<span class="fc" id="L47">        this.itemRepository = itemRepository;</span>
+<span class="fc" id="L48">        this.eventPublisher = eventPublisher;</span>
+<span class="fc" id="L49">    }</span>
+
+    @Scheduled(fixedRate = 1000 * 1000)
+    @Override
+    public void checkPrice() {
+<span class="fc" id="L54">        long l = (subscriptionRepository.getCountOfAllNeededToCheckItems().longValue() / pageSize );</span>
+<span class="pc bpc" id="L55" title="1 of 2 branches missed.">        if (l &lt; 1) {</span>
+<span class="fc" id="L56">            l = 1;</span>
+        }
+<span class="fc bfc" id="L58" title="All 2 branches covered.">        for (int page = 0; page &lt; l; page++) {</span>
+<span class="fc" id="L59">            checkPriceItemOnPage(pageSize, page);</span>
+        }
+<span class="fc" id="L61">    }</span>
+
+    public void setPageSize(final int pageSize) {
+<span class="nc" id="L64">        this.pageSize = pageSize;</span>
+<span class="nc" id="L65">    }</span>
+
+    private void checkPriceItemOnPage(int size, int page) {
+<span class="fc" id="L68">        List&lt;Item&gt; activeAndVerifiedSubscription = subscriptionRepository.getNeededCheckByPage(PageRequest.of(page, size));</span>
+<span class="fc" id="L69">        List&lt;ItemDto&gt; updatedItemDto = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L70">        List&lt;Item&gt; updatedItem = new ArrayList&lt;&gt;();</span>
+
+<span class="fc" id="L72">        AtomicBoolean isUpdated = new AtomicBoolean(false);</span>
+<span class="fc" id="L73">        activeAndVerifiedSubscription.forEach(item -&gt; {</span>
+            try {
+<span class="fc" id="L75">                final Optional&lt;ItemDto&gt; itemDtoOptional = tryPriceUpdate(item, avitoClient);</span>
+<span class="fc bfc" id="L76" title="All 2 branches covered.">                if (itemDtoOptional.isPresent()) {</span>
+<span class="fc" id="L77">                    final ItemDto itemDto = itemDtoOptional.get();</span>
+<span class="fc" id="L78">                    updatedItemDto.add(itemDto);</span>
+<span class="fc" id="L79">                    updatedItem.add(itemDto.getItem());</span>
+<span class="fc" id="L80">                    isUpdated.set(true);</span>
+                }
+<span class="fc" id="L82">            } catch (Exception exception) {</span>
+<span class="fc" id="L83">                exception.printStackTrace();</span>
+<span class="fc" id="L84">            }</span>
+<span class="fc" id="L85">        });</span>
+
+<span class="pc bpc" id="L87" title="1 of 2 branches missed.">        if (isUpdated.get()) {</span>
+<span class="fc" id="L88">            itemRepository.saveAll(updatedItem);</span>
+<span class="fc" id="L89">            notifySubscriberAboutPriceUpdate(updatedItemDto);</span>
+        }
+<span class="fc" id="L91">    }</span>
+
+    private Optional&lt;ItemDto&gt; tryPriceUpdate(Item item, AvitoClient avitoClient) throws Exception {
+<span class="fc" id="L94">        System.out.println(item.getId() + &quot; item id&quot;);</span>
+<span class="fc" id="L95">        final int actualPrice = avitoClient.getActualPrice(item.getId(), Config.AVITO_MOBILE_API_KEY);</span>
+<span class="fc" id="L96">        final int oldPrice = item.getPrice();</span>
+<span class="fc" id="L97">        System.out.println(oldPrice + &quot; &quot; + actualPrice);</span>
+
+<span class="fc bfc" id="L99" title="All 2 branches covered.">        if (oldPrice != actualPrice) {</span>
+<span class="fc" id="L100">            System.out.println(oldPrice + &quot; &quot; + actualPrice);</span>
+<span class="fc" id="L101">            item.setPrice(actualPrice);</span>
+<span class="fc" id="L102">            final ItemDto itemDto = new ItemDto(item, oldPrice);</span>
+
+<span class="fc" id="L104">            return Optional.of(itemDto);</span>
+//                log.info(getFormat(subscription, actualPrice, currentPrice), dateFormat.format(new Date())  );
+        }
+<span class="fc" id="L107">        return Optional.empty();</span>
+    }
+
+    private void notifySubscriberAboutPriceUpdate(List&lt;ItemDto&gt; updatedItemDto) {
+<span class="fc" id="L111">        updatedItemDto.forEach(itemDto -&gt; {</span>
+<span class="fc" id="L112">            String itemId = itemDto.getItem().getId();</span>
+<span class="fc" id="L113">            List&lt;User&gt; subscribers = getItemSubscribers(itemId);</span>
+
+<span class="fc" id="L115">            subscribers.forEach(subscriber -&gt; {</span>
+<span class="fc" id="L116">                eventPublisher.publishEvent(new OnItemPriceUpdateEvent(new Subscription(itemDto.getItem(), subscriber), itemDto.getOldPrice()));</span>
+<span class="fc" id="L117">                System.out.println(dateFormat.format(new Date()) + getFormat(itemDto.getItem(), itemDto.getItem().getPrice(), itemDto.getOldPrice()));</span>
+<span class="fc" id="L118">                System.out.println(&quot;The time is now {}&quot; + dateFormat.format(new Date()));</span>
+<span class="fc" id="L119">            });</span>
+<span class="fc" id="L120">        });</span>
+<span class="fc" id="L121">    }</span>
+
+    private List&lt;User&gt; getItemSubscribers(String itemId) {
+<span class="fc" id="L124">        List&lt;Object[]&gt; subscriberObjects = subscriptionRepository.getSubscribers(itemId);</span>
+<span class="fc" id="L125">        List&lt;User&gt; subscribers = new ArrayList&lt;&gt;();</span>
+<span class="fc" id="L126">        subscriberObjects.forEach(objects -&gt; {</span>
+<span class="fc" id="L127">            User user = new User((BigInteger) objects[0], String.valueOf(objects[1]), (boolean) objects[2]);</span>
+<span class="fc" id="L128">            subscribers.add(user);</span>
+<span class="fc" id="L129">        });</span>
+<span class="fc" id="L130">        return subscribers;</span>
+    }
+
+    private String getFormat(Item item, int actualPrice, int currentPrice) {
+<span class="fc" id="L134">        return &quot;The time is now {}. Price update of the item &quot; + item + &quot; updated. Old price &quot; + currentPrice + &quot;, new - &quot; + actualPrice + &quot;.&quot;;</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.6.202009150832</span></div></body></html>
