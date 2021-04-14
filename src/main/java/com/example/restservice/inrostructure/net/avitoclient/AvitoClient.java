@@ -19,7 +19,7 @@ public class AvitoClient {
         this.networkWrapper = networkWrapper;
     }
 
-    public int getActualPrice(String itemId, String avitoMobileApiKey) throws AvitoBaseException {
+    public int getActualPrice(String itemId, String avitoMobileApiKey) throws Exception {
         String avitoItemUrl = getAvitoItemUrl(itemId, avitoMobileApiKey);
 
         HttpResponse<String> response = networkWrapper.doGet(avitoItemUrl);

@@ -8,10 +8,7 @@ import org.mockito.Mockito;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.when;
 
-
 class AvitoClientTest {
-
-    private NetworkWrapper networkWrapper;
 
     public String getAvitoItemUrl(final String itemId, String avitoMobileApiKey) {
         return "https://m.avito.ru/api/16/items/" + itemId + "?key=" + avitoMobileApiKey;

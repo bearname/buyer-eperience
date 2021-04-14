@@ -9,7 +9,6 @@ public class OnItemPriceUpdateEvent extends BaseApplicationEvent {
     public OnItemPriceUpdateEvent(Subscription subscription, int oldPrice) {
         super(subscription, "Item Price Update");
         this.oldPrice = oldPrice;
-        System.out.println("New on item price update event");
     }
 
     public int getOldPrice() {

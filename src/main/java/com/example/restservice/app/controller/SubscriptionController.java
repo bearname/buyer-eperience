@@ -98,6 +98,9 @@ public class SubscriptionController {
             if (success) {
                 result.put("status", "success");
                 result.put("message", "success cancel subscription");
+            } else {
+                result.put("status", "failed");
+                result.put("message", "failed cancel subscription");
             }
         } catch (Exception exception) {
             exception.printStackTrace();

@@ -5,7 +5,7 @@ import org.junit.jupiter.api.Test;
 import static org.junit.jupiter.api.Assertions.assertFalse;
 import static org.junit.jupiter.api.Assertions.assertTrue;
 
-class PatternValidatorTest {
+class PatternValidatorImplTest {
 
     private final PatternValidatorImpl patternValidator = new PatternValidatorImpl();
 

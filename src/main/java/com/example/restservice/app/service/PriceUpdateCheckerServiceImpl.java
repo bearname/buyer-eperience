@@ -22,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 @Component
 public class PriceUpdateCheckerServiceImpl implements PriceUpdateCheckerService {
@@ -34,10 +35,14 @@ public class PriceUpdateCheckerServiceImpl implements PriceUpdateCheckerService 
     private final SubscriptionRepository subscriptionRepository;
     private final ItemRepository itemRepository;
     private final ApplicationEventPublisher eventPublisher;
+    private int pageSize = 100;
 
     @Autowired
-    public PriceUpdateCheckerServiceImpl(AvitoClient parserAvitoItemPriceService, SubscriptionRepository subscriptionRepository, ItemRepository itemRepository, ApplicationEventPublisher eventPublisher) {
-        this.avitoClient = parserAvitoItemPriceService;
+    public PriceUpdateCheckerServiceImpl(AvitoClient avitoClient,
+                                         SubscriptionRepository subscriptionRepository,
+                                         ItemRepository itemRepository,
+                                         ApplicationEventPublisher eventPublisher) {
+        this.avitoClient = avitoClient;
         this.subscriptionRepository = subscriptionRepository;
         this.itemRepository = itemRepository;
         this.eventPublisher = eventPublisher;
@@ -46,17 +51,25 @@ public class PriceUpdateCheckerServiceImpl implements PriceUpdateCheckerService 
     @Scheduled(fixedRate = 1000 * 1000)
     @Override
     public void checkPrice() {
-        int size = 100;
-        for (int page = 0; page < subscriptionRepository.getNeededCheckCount().longValue() / size; page++) {
-            checkPriceItemOnPage(size, page);
+        long l = (subscriptionRepository.getCountOfAllNeededToCheckItems().longValue() / pageSize );
+        if (l < 1) {
+            l = 1;
+        }
+        for (int page = 0; page < l; page++) {
+            checkPriceItemOnPage(pageSize, page);
         }
     }
 
+    public void setPageSize(final int pageSize) {
+        this.pageSize = pageSize;
+    }
+
     private void checkPriceItemOnPage(int size, int page) {
-        List<Item> activeAndVerifiedSubscription = subscriptionRepository.getNeededCheck(PageRequest.of(page, size));
+        List<Item> activeAndVerifiedSubscription = subscriptionRepository.getNeededCheckByPage(PageRequest.of(page, size));
         List<ItemDto> updatedItemDto = new ArrayList<>();
         List<Item> updatedItem = new ArrayList<>();
 
+        AtomicBoolean isUpdated = new AtomicBoolean(false);
         activeAndVerifiedSubscription.forEach(item -> {
             try {
                 final Optional<ItemDto> itemDtoOptional = tryPriceUpdate(item, avitoClient);
@@ -64,17 +77,21 @@ public class PriceUpdateCheckerServiceImpl implements PriceUpdateCheckerService 
                     final ItemDto itemDto = itemDtoOptional.get();
                     updatedItemDto.add(itemDto);
                     updatedItem.add(itemDto.getItem());
+                    isUpdated.set(true);
                 }
-            } catch (AvitoBaseException exception) {
+            } catch (Exception exception) {
                 exception.printStackTrace();
             }
         });
 
-        itemRepository.saveAll(updatedItem);
-        notifySubscriberAboutPriceUpdate(updatedItemDto);
+        if (isUpdated.get()) {
+            itemRepository.saveAll(updatedItem);
+            notifySubscriberAboutPriceUpdate(updatedItemDto);
+        }
     }
 
-    private Optional<ItemDto> tryPriceUpdate(Item item, AvitoClient avitoClient) throws AvitoBaseException {
+    private Optional<ItemDto> tryPriceUpdate(Item item, AvitoClient avitoClient) throws Exception {
+        System.out.println(item.getId() + " item id");
         final int actualPrice = avitoClient.getActualPrice(item.getId(), Config.AVITO_MOBILE_API_KEY);
         final int oldPrice = item.getPrice();
         System.out.println(oldPrice + " " + actualPrice);
@@ -92,8 +109,8 @@ public class PriceUpdateCheckerServiceImpl implements PriceUpdateCheckerService 
 
     private void notifySubscriberAboutPriceUpdate(List<ItemDto> updatedItemDto) {
         updatedItemDto.forEach(itemDto -> {
-            String id = itemDto.getItem().getId();
-            List<User> subscribers = getSubscribers(id);
+            String itemId = itemDto.getItem().getId();
+            List<User> subscribers = getItemSubscribers(itemId);
 
             subscribers.forEach(subscriber -> {
                 eventPublisher.publishEvent(new OnItemPriceUpdateEvent(new Subscription(itemDto.getItem(), subscriber), itemDto.getOldPrice()));
@@ -103,8 +120,8 @@ public class PriceUpdateCheckerServiceImpl implements PriceUpdateCheckerService 
         });
     }
 
-    private List<User> getSubscribers(String id) {
-        List<Object[]> subscriberObjects = subscriptionRepository.getSubscribers(id);
+    private List<User> getItemSubscribers(String itemId) {
+        List<Object[]> subscriberObjects = subscriptionRepository.getSubscribers(itemId);
         List<User> subscribers = new ArrayList<>();
         subscriberObjects.forEach(objects -> {
             User user = new User((BigInteger) objects[0], String.valueOf(objects[1]), (boolean) objects[2]);

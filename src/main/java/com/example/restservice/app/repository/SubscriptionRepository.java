@@ -20,10 +20,10 @@ public interface SubscriptionRepository extends PagingAndSortingRepository<Subsc
     Subscription findByItemIdAndUserId(String itemId, BigInteger userId);
 
     @Query("select distinct count(sub.item) from Subscription sub where sub.isActive = true and sub.isVerified = true")
-    BigInteger getNeededCheckCount();
+    BigInteger getCountOfAllNeededToCheckItems();
 
     @Query("select distinct(sub.item) from Subscription sub where sub.isActive = true and sub.isVerified = true")
-    List<Item> getNeededCheck(Pageable pageable);
+    List<Item> getNeededCheckByPage(Pageable pageable);
 
     Subscription findByItemIdAndUserEmail(String itemId, String email);
 

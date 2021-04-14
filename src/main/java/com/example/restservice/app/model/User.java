@@ -23,6 +23,15 @@ public class User {
         this.email = email;
     }
 
+    public User(BigInteger id, String email) {
+        this.id = id;
+        this.email = email;
+    }
+
+    public User(long id, String email) {
+        this(BigInteger.valueOf(id), email);
+    }
+
     public User(BigInteger id, String email, boolean isVerified) {
         this.id = id;
         this.email = email;

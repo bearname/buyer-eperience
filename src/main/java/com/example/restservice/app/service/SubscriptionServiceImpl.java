@@ -9,6 +9,7 @@ import com.example.restservice.app.repository.ItemRepository;
 import com.example.restservice.app.repository.SubscriptionRepository;
 import com.example.restservice.app.repository.UserRepository;
 import com.example.restservice.inrostructure.config.Config;
+import com.example.restservice.inrostructure.net.avitoclient.AvitoBaseException;
 import com.example.restservice.inrostructure.net.avitoclient.AvitoClient;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
@@ -37,10 +38,10 @@ public class SubscriptionServiceImpl implements SubscriptionService{
 
     @Override
     public String subscribe(final String email, final String itemUrl, final String host) {
-        String itemId = getItemId(itemUrl);
-        Subscription checkItem = subscriptionRepository.findByItemIdAndUserEmail(itemId, email);
-        if (isDeactivatedItem(checkItem)) {
-            resubscribe(checkItem);
+        String itemId = parseItemId(itemUrl);
+        Subscription subscription = subscriptionRepository.findByItemIdAndUserEmail(itemId, email);
+        if (isDeactivatedItem(subscription)) {
+            resubscribe(subscription);
             return "your resubscribe";
         } else {
             return subscribeNewItem(email, itemUrl, host, itemId);
@@ -48,12 +49,12 @@ public class SubscriptionServiceImpl implements SubscriptionService{
     }
 
     @Override
-    public boolean unsubscribe(String itemId, long userId) throws Exception {
+    public boolean unsubscribe(String itemId, long userId) {
         BigInteger userId1 = BigInteger.valueOf(userId);
         Subscription subscription = subscriptionRepository.findByItemIdAndUserId(itemId, userId1);
 
         if (subscription == null) {
-            throw new Exception("Unknown subscription");
+            return false;
         }
 
         subscription.setActive(false);
@@ -65,20 +66,22 @@ public class SubscriptionServiceImpl implements SubscriptionService{
 
     @Override
     public boolean confirmSubscription(String itemId, String verificationCode, BigInteger userId) throws Exception {
-        boolean successVerification = false;
-
         Subscription subscription = subscriptionRepository.findByItemIdAndUserId(itemId, userId);
-        if (subscription.getVerificationCode().equals(verificationCode)) {
-            if (subscription.isVerified()) {
-                throw new Exception("subscription already verified");
-            }
 
-            subscription.setVerified(true);
-            subscriptionRepository.save(subscription);
-            successVerification = true;
+        if (subscription == null) {
+            throw new Exception("Unknown subscription");
+        }
+        if (!subscription.getVerificationCode().equals(verificationCode)) {
+            return false;
+        }
+        if (subscription.isVerified()) {
+            throw new Exception("subscription already verified");
         }
 
-        return successVerification;
+        subscription.setVerified(true);
+        subscriptionRepository.save(subscription);
+
+        return true;
     }
 
     @Override
@@ -113,10 +116,12 @@ public class SubscriptionServiceImpl implements SubscriptionService{
                 return s.get();
             }
 
-            Subscription savedSubscription = subscriptionRepository.save( new Subscription(item, user));
+            Subscription savedSubscription = subscriptionRepository.save(new Subscription(item, user));
             eventPublisher.publishEvent(new OnNewItemSubscriptionEvent(savedSubscription, host));
 
             return email + " " + itemUrl + " " + itemId;
+        } catch (AvitoBaseException exception) {
+            return exception.getMessage();
         } catch (Exception exception) {
             exception.printStackTrace();
         }
@@ -138,6 +143,7 @@ public class SubscriptionServiceImpl implements SubscriptionService{
         User user = new User(email);
         if (!userRepository.existsByEmail(email)) {
             user = userRepository.save(user);
+            System.out.println(user.getEmail());
         } else {
             user = userRepository.getByEmail(email);
         }
@@ -146,11 +152,11 @@ public class SubscriptionServiceImpl implements SubscriptionService{
 
     private Optional<String> checkSubscription(String host, Item item, User user) {
         Optional<String> result = Optional.empty();
-        Subscription subscription1 = subscriptionRepository.findByItemIdAndUserId(item.getId(), user.getId());
-        if (subscription1 != null) {
+        Subscription subscription = subscriptionRepository.findByItemIdAndUserId(item.getId(), user.getId());
+        if (subscription != null) {
             String message = "Subscription already exists.";
-            if (!subscription1.isVerified()) {
-                message += " PLease confirm your subscription " + OnNewSubscriptionListener.getConfirmationUrl(subscription1, host);
+            if (!subscription.isVerified()) {
+                message += " PLease confirm your subscription " + OnNewSubscriptionListener.getConfirmationUrl(subscription, host);
             }
 
             result = Optional.of(message);
@@ -159,7 +165,7 @@ public class SubscriptionServiceImpl implements SubscriptionService{
         return result;
     }
 
-    private String getItemId(String itemUrl) {
+    private String parseItemId(String itemUrl) {
         return itemUrl.substring(itemUrl.lastIndexOf("_") + 1);
     }
 }
