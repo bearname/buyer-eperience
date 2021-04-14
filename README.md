@@ -65,6 +65,7 @@ this command run
 #Scale
 `docker-composer up --scale app={instance count} db={instance count}`
 
+
 ##Docs
 ![db-diagram](/docs/images/db-diagram.jpg)
 ![code-coverage](/docs/images/code-coverage-jacoco.jpg)
