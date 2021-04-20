@@ -24,12 +24,12 @@
 - Написаны тесты (постарайтесь достичь покрытия в 70% и больше).
 - Подтверждение email пользователя.
 
-#Dependencies
+# Dependencies
 1) [java11](https://www.oracle.com/java/technologies/javase-jdk11-downloads.html) latest 
 set `JAVA_HOME` environment variable to java installation path
 2) [Postgresql server 11](https://www.postgresql.org/download/) latest
 
-#Preparation smtp server
+# Preparation smtp server
 1. specify smtp server: host, username and password
 You can use smtp.gmail.com as smtp server.   
 You can should set "spring.mail.username" and "spring.mail.password" with you "google account email" and "password" in the file following src\main\resources\application.properties.
@@ -37,14 +37,14 @@ Disable two factor authentication on your google account   https://myaccount.goo
 Google account > Security > Less secure app access > turn on
 Go to gmail.com > setting > see all settings > forwarding and pop/imap > enable imap
 
-##Gradle usage:
-# Build
+# Gradle usage:
+## Build
 1) `cd` project root
 2) `gradlew build`
-# Run
+## Run
  `java -jar build\libs\*.jar `
 
-# Test
+## Test
 Test running with jacoco code coverage analysis
 
 `gradlew test`
