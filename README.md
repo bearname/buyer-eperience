@@ -51,22 +51,22 @@ Test running with jacoco code coverage analysis
 
 jacoco result available at the build/jacocoHtml/index.html
 
-##Docker usage:
+## Docker usage:
 1. `docker build -t {your-hub-username}/{package-name} .`
 2. `docker run -p 8080:8080 {your-hub-username}/{package-name}`
 
-##Docker composer usage:
+## Docker composer usage:
 `docker-composer up `
 this command run
  one nginx instance container as load balancer at 4000 port
  one postgres server instance container  at 5432 port
  one application backend server instance 
 
-#Scale
+## Scale
 `docker-composer up --scale app={instance count} db={instance count}`
 
 
-##Docs
+# Docs
 ![db-diagram](/docs/images/db-diagram.jpg)
 ![code-coverage](/docs/images/code-coverage-jacoco.jpg)
 ![endpoints](/docs/images/swagger-endpoints.jpg)
