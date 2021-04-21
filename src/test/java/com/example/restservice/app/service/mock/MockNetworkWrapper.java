@@ -1,4 +1,4 @@
-package com.example.restservice.app.service;
+package com.example.restservice.app.service.mock;
 
 import com.example.restservice.inrostructure.net.NetworkWrapper;
 

@@ -10,6 +10,8 @@ import com.example.restservice.app.repository.SubscriptionRepository;
 import com.example.restservice.inrostructure.config.Config;
 import com.example.restservice.inrostructure.net.avitoclient.AvitoBaseException;
 import com.example.restservice.inrostructure.net.avitoclient.AvitoClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.PageRequest;
@@ -27,9 +29,9 @@ import java.util.concurrent.atomic.AtomicBoolean;
 @Component
 public class PriceUpdateCheckerServiceImpl implements PriceUpdateCheckerService {
 
-//    private static final Logger log = LoggerFactory.getLogger(PriceUpdaterService.class);
+    private static final Logger log = LoggerFactory.getLogger("logger");
 
-    private static final SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
+    private final SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
 
     private final AvitoClient avitoClient;
     private final SubscriptionRepository subscriptionRepository;
@@ -51,7 +53,7 @@ public class PriceUpdateCheckerServiceImpl implements PriceUpdateCheckerService 
     @Scheduled(fixedRate = 1000 * 1000)
     @Override
     public void checkPrice() {
-        long l = (subscriptionRepository.getCountOfAllNeededToCheckItems().longValue() / pageSize );
+        long l = (subscriptionRepository.getCountOfAllNeededToCheckItems().longValue() / pageSize);
         if (l < 1) {
             l = 1;
         }
@@ -79,8 +81,8 @@ public class PriceUpdateCheckerServiceImpl implements PriceUpdateCheckerService 
                     updatedItem.add(itemDto.getItem());
                     isUpdated.set(true);
                 }
-            } catch (Exception exception) {
-                exception.printStackTrace();
+            } catch (AvitoBaseException exception) {
+                log.warn(exception.getMessage());
             }
         });
 
@@ -90,19 +92,16 @@ public class PriceUpdateCheckerServiceImpl implements PriceUpdateCheckerService 
         }
     }
 
-    private Optional<ItemDto> tryPriceUpdate(Item item, AvitoClient avitoClient) throws Exception {
-        System.out.println(item.getId() + " item id");
+    private Optional<ItemDto> tryPriceUpdate(Item item, AvitoClient avitoClient) throws AvitoBaseException {
         final int actualPrice = avitoClient.getActualPrice(item.getId(), Config.AVITO_MOBILE_API_KEY);
         final int oldPrice = item.getPrice();
-        System.out.println(oldPrice + " " + actualPrice);
 
         if (oldPrice != actualPrice) {
-            System.out.println(oldPrice + " " + actualPrice);
             item.setPrice(actualPrice);
             final ItemDto itemDto = new ItemDto(item, oldPrice);
 
+            log.info("{} {}", new Date(), getFormat(itemDto.getItem(), oldPrice, actualPrice));
             return Optional.of(itemDto);
-//                log.info(getFormat(subscription, actualPrice, currentPrice), dateFormat.format(new Date())  );
         }
         return Optional.empty();
     }
@@ -114,8 +113,8 @@ public class PriceUpdateCheckerServiceImpl implements PriceUpdateCheckerService 
 
             subscribers.forEach(subscriber -> {
                 eventPublisher.publishEvent(new OnItemPriceUpdateEvent(new Subscription(itemDto.getItem(), subscriber), itemDto.getOldPrice()));
-                System.out.println(dateFormat.format(new Date()) + getFormat(itemDto.getItem(), itemDto.getItem().getPrice(), itemDto.getOldPrice()));
-                System.out.println("The time is now {}" + dateFormat.format(new Date()));
+                log.info("{}{}", dateFormat.format(new Date()), getFormat(itemDto.getItem(), itemDto.getItem().getPrice(), itemDto.getOldPrice()));
+                log.info("The time is now {}", dateFormat.format(new Date()));
             });
         });
     }

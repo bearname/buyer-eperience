@@ -2,6 +2,7 @@ package com.example.restservice.app.service;
 
 import com.example.restservice.app.events.event.OnNewItemSubscriptionEvent;
 import com.example.restservice.app.events.listener.OnNewSubscriptionListener;
+import com.example.restservice.app.exception.SubscriptionException;
 import com.example.restservice.app.model.Item;
 import com.example.restservice.app.model.Subscription;
 import com.example.restservice.app.model.User;
@@ -20,7 +21,7 @@ import java.math.BigInteger;
 import java.util.Optional;
 
 @Service
-public class SubscriptionServiceImpl implements SubscriptionService{
+public class SubscriptionServiceImpl implements SubscriptionService {
     private final ApplicationEventPublisher eventPublisher;
 
     private final UserRepository userRepository;
@@ -65,17 +66,17 @@ public class SubscriptionServiceImpl implements SubscriptionService{
     }
 
     @Override
-    public boolean confirmSubscription(String itemId, String verificationCode, BigInteger userId) throws Exception {
+    public boolean confirmSubscription(String itemId, String verificationCode, BigInteger userId) throws SubscriptionException {
         Subscription subscription = subscriptionRepository.findByItemIdAndUserId(itemId, userId);
 
         if (subscription == null) {
-            throw new Exception("Unknown subscription");
+            throw new SubscriptionException("Unknown subscription");
         }
         if (!subscription.getVerificationCode().equals(verificationCode)) {
             return false;
         }
         if (subscription.isVerified()) {
-            throw new Exception("Subscription already verified");
+            throw new SubscriptionException("Subscription already verified");
         }
 
         subscription.setVerified(true);
@@ -85,13 +86,11 @@ public class SubscriptionServiceImpl implements SubscriptionService{
     }
 
     @Override
-    public Page<Subscription> getUserSubscriptions(Long userId, Integer page, Integer limit) throws Exception {
+    public Page<Subscription> getUserSubscriptions(Long userId, Integer page, Integer limit) throws SubscriptionException {
         Optional<User> byId = this.userRepository.findById(BigInteger.valueOf(userId));
         if (byId.isEmpty()) {
-            throw new Exception("Unknown user with id " + userId);
+            throw new SubscriptionException("Unknown user with id " + userId);
         }
-
-        System.out.println(byId);
 
         return this.subscriptionRepository.following(BigInteger.valueOf(userId), PageRequest.of(page, limit));
     }
@@ -122,11 +121,7 @@ public class SubscriptionServiceImpl implements SubscriptionService{
             return email + " " + itemUrl + " " + itemId;
         } catch (AvitoBaseException exception) {
             return exception.getMessage();
-        } catch (Exception exception) {
-            exception.printStackTrace();
         }
-
-        return "failed";
     }
 
     private Item initItem(String itemUrl, String itemId, int actualPrice) {
@@ -143,7 +138,6 @@ public class SubscriptionServiceImpl implements SubscriptionService{
         User user = new User(email);
         if (!userRepository.existsByEmail(email)) {
             user = userRepository.save(user);
-            System.out.println(user.getEmail());
         } else {
             user = userRepository.getByEmail(email);
         }

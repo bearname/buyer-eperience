@@ -21,6 +21,8 @@ public class SubscriptionController {
 
     public static final int DEFAULT_PAGE = 0;
     public static final int DEFAULT_PAGE_LIMIT = 10;
+    public static final String SUCCESS_FIELD = "success";
+    public static final String MESSAGE_FIELD = "message";
     private final PatternValidator patternValidatorService;
 
     private final SubscriptionService subscriptionService;
@@ -38,20 +40,6 @@ public class SubscriptionController {
                                                    @RequestParam(value = "limit", required = false) Integer limit,
                                                    @RequestHeader(name = "Host", required = false) final String host,
                                                    HttpServletRequest request) {
-        System.out.println(request);
-        System.out.println("======================");
-        System.out.println("======================");
-        System.out.println("======================");
-        System.out.println(request.getLocalName());
-        System.out.println(request.getContextPath());
-        System.out.println(request.getLocalAddr());
-        System.out.println(request.getRemoteUser());
-        System.out.println(request.getRemoteUser());
-        System.out.println("Host " + host);
-        System.out.println("======================");
-        System.out.println("======================");
-        System.out.println("======================");
-
         if (page == null || page < 0) {
             page = DEFAULT_PAGE;
         }
@@ -65,13 +53,13 @@ public class SubscriptionController {
 
             result.put("subscriptions", userSubscriptions);
             result.put("userId", userId);
-            result.put("success", true);
+            result.put(SUCCESS_FIELD, true);
             return ResponseEntity
                     .ok()
                     .body(result);
         } catch (Exception exception) {
-            result.put("success", false);
-            result.put("message", "Unknown user with id " + userId);
+            result.put(SUCCESS_FIELD, false);
+            result.put(MESSAGE_FIELD, "Unknown user with id " + userId);
         }
 
         return ResponseEntity.notFound().build();
@@ -87,11 +75,11 @@ public class SubscriptionController {
         if (!patternValidatorService.isValid(email, ValidateType.EMAIL)) {
             message = "Invalid email";
             if (email != null) {
-                message += ": "  + email;
+                message += ": " + email;
             }
 
-            result.put("message", message);
-            result.put("success", false);
+            result.put(MESSAGE_FIELD, message);
+            result.put(SUCCESS_FIELD, false);
             return ResponseEntity
                     .status(HttpStatus.BAD_REQUEST)
                     .body(result);
@@ -101,10 +89,10 @@ public class SubscriptionController {
         if (!patternValidatorService.isValid(avitoItemUrl, ValidateType.URL)) {
             message = "Invalid url";
             if (avitoItemUrl != null) {
-                message += ": "  + avitoItemUrl;
+                message += ": " + avitoItemUrl;
             }
-            result.put("message", message);
-            result.put("success", false);
+            result.put(MESSAGE_FIELD, message);
+            result.put(SUCCESS_FIELD, false);
             return ResponseEntity
                     .status(HttpStatus.BAD_REQUEST)
                     .body(result);
@@ -112,8 +100,8 @@ public class SubscriptionController {
 
         message = subscriptionService.subscribe(email, avitoItemUrl, host);
 
-        result.put("success", true);
-        result.put("message", message);
+        result.put(SUCCESS_FIELD, true);
+        result.put(MESSAGE_FIELD, message);
 
         return ResponseEntity
                 .ok()
@@ -123,22 +111,17 @@ public class SubscriptionController {
     @PostMapping("/{itemId}/{userId}/unsubscribe")
     @ResponseBody
     public ResponseEntity<Object> unsubscribe(@PathVariable(name = "userId") String userId,
-                                           @PathVariable(name = "itemId") String itemId) {
+                                              @PathVariable(name = "itemId") String itemId) {
         Map<String, Object> result = new HashMap<>();
-        try {
-            final boolean success = subscriptionService.unsubscribe(itemId, Long.parseLong(userId));
 
-            if (success) {
-                result.put("success", true);
-                result.put("message", "Success cancel subscription");
-            } else {
-                result.put("success", false);
-                result.put("message", "Failed cancel subscription");
-            }
-        } catch (Exception exception) {
-            exception.printStackTrace();
-            result.put("success", false);
-            result.put("message", "Failed cancel subscription");
+        final boolean success = subscriptionService.unsubscribe(itemId, Long.parseLong(userId));
+
+        if (success) {
+            result.put(SUCCESS_FIELD, true);
+            result.put(MESSAGE_FIELD, "Success cancel subscription");
+        } else {
+            result.put(SUCCESS_FIELD, false);
+            result.put(MESSAGE_FIELD, "Failed cancel subscription");
         }
 
         return ResponseEntity
@@ -149,20 +132,17 @@ public class SubscriptionController {
     @GetMapping("/{itemId}/{userId}/confirm")
     @ResponseBody
     public ResponseEntity<Object> confirm(@PathVariable(name = "userId") String userId,
-                                       @PathVariable(name = "itemId") String itemId,
-                                       @RequestParam("verificationCode") String verificationCode) {
+                                          @PathVariable(name = "itemId") String itemId,
+                                          @RequestParam("verificationCode") String verificationCode) {
         Map<String, Object> result = new HashMap<>();
         try {
-            System.out.println(itemId + " " + userId + " " + verificationCode);
-
             final BigInteger userId1 = BigInteger.valueOf(Long.parseLong(userId));
             final boolean successVerification = subscriptionService.confirmSubscription(itemId, verificationCode, userId1);
-            result.put("success", successVerification);
-            result.put("message", (successVerification ? "Success" : "Failed") + " verified your email");
+            result.put(SUCCESS_FIELD, successVerification);
+            result.put(MESSAGE_FIELD, (successVerification ? "Success" : "Failed") + " verified your email");
         } catch (Exception exception) {
-            exception.printStackTrace();
-            result.put("success", false);
-            result.put("message", "Failed verified your email");
+            result.put(SUCCESS_FIELD, false);
+            result.put(MESSAGE_FIELD, "Failed verified your email");
         }
 
         return ResponseEntity

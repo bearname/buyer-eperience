@@ -6,7 +6,6 @@ import java.util.ArrayList;
 import java.util.Optional;
 
 import static com.example.restservice.app.repository.MockSubscriptionRepository.ITEMS;
-
 import static org.junit.jupiter.api.Assertions.assertEquals;
 
 public class MockPriceUpdatedItemRepository implements ItemRepository {
@@ -20,14 +19,14 @@ public class MockPriceUpdatedItemRepository implements ItemRepository {
         final ArrayList<Item> result = new ArrayList<>();
         entities.forEach(result::add);
 
-        assertEquals(result.size(), 1);
+        assertEquals(1, result.size());
         if (result.get(0).getId().equals("1")) {
             final Item resultItem = result.get(0);
             final Item item2 = ITEMS.get(0);
-            assertEquals(resultItem.getId(), item2.getId());
-            assertEquals(resultItem.getPrice(), 2501);
+            assertEquals(item2.getId(), resultItem.getId());
+            assertEquals(2501, resultItem.getPrice());
 
-            assertEquals(result.get(0), ITEMS.get(0));
+            assertEquals(ITEMS.get(0), result.get(0));
         }
 
         return entities;

@@ -7,8 +7,8 @@ import java.util.regex.Pattern;
 
 @Component
 public class PatternValidatorImpl implements PatternValidator {
-    private final String EMAIL_PATTERN = "^[A-Za-z0-9._%+-]+[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+.[A-Za-z]{2,6}$";
-    private final String URL_PATTERN = "^(https)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]";
+    private static final String EMAIL_PATTERN = "^[A-Za-z0-9._%+-]+[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+.[A-Za-z]{2,6}$";
+    private static final String URL_PATTERN = "^(https)://[-a-zA-Z0-9+&@#/%?=~_|!:,.;]*[-a-zA-Z0-9+&@#/%=~_|]";
 
     @Override
     public boolean isValid(final String string, final ValidateType type) {

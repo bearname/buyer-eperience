@@ -9,7 +9,6 @@ public class NotUpdatedMockPriceApplicationEventPublisher implements Application
 
     @Override
     public void publishEvent(ApplicationEvent event) {
-//        fail();
     }
 
     @Override

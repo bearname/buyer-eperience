@@ -25,7 +25,7 @@ public class MockPriceApplicationEventPublisher implements ApplicationEventPubli
             assertEquals(eventUser.getId(), user.getId());
             assertEquals(eventUser.getEmail(), user.getEmail());
             assertEquals(resultItem.getId(), item2.getId());
-            assertEquals(resultItem.getPrice(), 2501);
+            assertEquals(2501, resultItem.getPrice());
         } else {
             fail();
         }

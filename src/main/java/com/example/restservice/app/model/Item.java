@@ -1,11 +1,12 @@
 package com.example.restservice.app.model;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.List;
 import java.util.Objects;
 
 @Entity
-public class Item {
+public class Item implements Serializable {
     @Id
     private final String id;
     private int price;

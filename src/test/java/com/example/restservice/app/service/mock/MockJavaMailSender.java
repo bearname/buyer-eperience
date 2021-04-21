@@ -1,4 +1,4 @@
-package com.example.restservice.app.service;
+package com.example.restservice.app.service.mock;
 
 import org.springframework.mail.MailException;
 import org.springframework.mail.SimpleMailMessage;
@@ -43,7 +43,7 @@ public class MockJavaMailSender implements JavaMailSender {
 
     @Override
     public void send(SimpleMailMessage simpleMessage) throws MailException {
-       this.message  = simpleMessage;
+        this.message = simpleMessage;
     }
 
     @Override
@@ -51,7 +51,7 @@ public class MockJavaMailSender implements JavaMailSender {
 
     }
 
-   public SimpleMailMessage getMessage() {
-      return message;
-   }
+    public SimpleMailMessage getMessage() {
+        return message;
+    }
 }

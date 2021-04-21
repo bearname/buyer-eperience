@@ -12,9 +12,10 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
-public class MockSubscriptionRepository implements SubscriptionRepository{
-    public static final  List<Item> ITEMS = new ArrayList<>();
-    static  {
+public class MockSubscriptionRepository implements SubscriptionRepository {
+    public static final List<Item> ITEMS = new ArrayList<>();
+
+    static {
         ITEMS.add(new Item("1", 2500, "https://www.avito.ru/kazan/tovary_dlya_kompyutera/asus_gaming_vg248qg_2112597286"));
         ITEMS.add(new Item("2", 2500, "https://www.avito.ru/yoshkar-ola/noutbuki/noutbuk_hp_14s-fq0070ur_1738034102"));
     }

@@ -1,7 +1,6 @@
 package com.example.restservice.inrostructure.net.avitoclient;
 
 import com.example.restservice.inrostructure.net.NetworkWrapper;
-import com.example.restservice.inrostructure.utils.Dumper;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -12,19 +11,18 @@ import java.net.http.HttpResponse;
 @Component
 public class AvitoClient {
     private final NetworkWrapper networkWrapper;
-    public static final char[] DIGITS_ARRAY = "0123456789".toCharArray();
+    private static final char[] DIGITS_ARRAY = "0123456789".toCharArray();
 
     @Autowired
     public AvitoClient(NetworkWrapper networkWrapper) {
         this.networkWrapper = networkWrapper;
     }
 
-    public int getActualPrice(String itemId, String avitoMobileApiKey) throws Exception {
+    public int getActualPrice(String itemId, String avitoMobileApiKey) throws AvitoBaseException {
         String avitoItemUrl = getAvitoItemUrl(itemId, avitoMobileApiKey);
 
         HttpResponse<String> response = networkWrapper.doGet(avitoItemUrl);
 
-//        if (response.headers().firstValue(""))
         JsonObject jsonObject = JsonParser.parseString(response.body()).getAsJsonObject();
         if (jsonObject.has("error")) {
             handleError(jsonObject);
@@ -41,22 +39,27 @@ public class AvitoClient {
 
         String actualPrice = price.get("value").getAsString();
 
-        int x = parsePriceString(actualPrice);
-        Dumper.dump(x, System.out);
-        return x;
+        return parsePriceString(actualPrice);
     }
 
     private void handleError(JsonObject jsonObject) throws AvitoBaseException {
         final JsonObject error = jsonObject.get("error").getAsJsonObject();
+        if (!error.has("code")) {
+            throw new AvitoBaseException("Error not have 'code' field");
+        }
         final int code = error.get("code").getAsInt();
+        if (!error.has("message")) {
+            throw new AvitoBaseException("Error not have 'message' field");
+        }
+
         final String message = error.get("message").getAsString();
 
         switch (code) {
             case AvitoResponseCode.INVALID_ITEM_ID:
                 throw new InvalidItemIdException400(message);
-            case  AvitoResponseCode.UNKNOWN_KEY:
+            case AvitoResponseCode.UNKNOWN_KEY:
                 throw new UnknownKeyException403(message);
-            case  AvitoResponseCode.ITEM_NOT_FOUND:
+            case AvitoResponseCode.ITEM_NOT_FOUND:
                 throw new ItemNotFoundException404(message);
             default:
                 throw new AvitoApiChangedException("Unsupported response code");

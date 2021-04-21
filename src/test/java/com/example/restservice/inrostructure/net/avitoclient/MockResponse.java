@@ -13,7 +13,8 @@ import java.util.Optional;
 import java.util.function.BiPredicate;
 
 public class MockResponse {
-    public static final BiPredicate<String,String> ACCEPT_ALL = (x, y) -> true;
+    public static final BiPredicate<String, String> ACCEPT_ALL = (x, y) -> true;
+
     public static final HttpResponse<String> NO_HAS_PRICE_200 = new HttpResponse<>() {
 
         @Override
@@ -327,5 +328,93 @@ public class MockResponse {
         }
     };
 
+    public static final HttpResponse<String> WITHOUT_CODE_FIELD_ERROR_RESPONSE = new HttpResponse<>() {
 
+        @Override
+        public int statusCode() {
+            return 400;
+        }
+
+        @Override
+        public HttpRequest request() {
+            return null;
+        }
+
+        @Override
+        public Optional<HttpResponse<String>> previousResponse() {
+            return Optional.empty();
+        }
+
+        @Override
+        public HttpHeaders headers() {
+            Map<String, List<String>> headers = new HashMap<>();
+
+            return HttpHeaders.of(headers, ACCEPT_ALL);
+        }
+
+        @Override
+        public String body() {
+            return "{\"error\":{\"statusCode\":400,\"message\":\"\"}}";
+        }
+
+        @Override
+        public Optional<SSLSession> sslSession() {
+            return Optional.empty();
+        }
+
+        @Override
+        public URI uri() {
+            return URI.create("https://m.avito.ru/api/16/items/d?key=af0deccbgcgidddjgnvljitntccdduijhdinfgjgfjir");
+        }
+
+        @Override
+        public HttpClient.Version version() {
+            return HttpClient.Version.HTTP_1_1;
+        }
+    };
+
+    public static final HttpResponse<String> WITHOUT_MESSAGE_FIELD_ERROR_RESPONSE = new HttpResponse<>() {
+
+        @Override
+        public int statusCode() {
+            return 400;
+        }
+
+        @Override
+        public HttpRequest request() {
+            return null;
+        }
+
+        @Override
+        public Optional<HttpResponse<String>> previousResponse() {
+            return Optional.empty();
+        }
+
+        @Override
+        public HttpHeaders headers() {
+            Map<String, List<String>> headers = new HashMap<>();
+
+            return HttpHeaders.of(headers, ACCEPT_ALL);
+        }
+
+        @Override
+        public String body() {
+            return "{\"error\":{\"code\":400,\"text\":\"\"}}";
+        }
+
+        @Override
+        public Optional<SSLSession> sslSession() {
+            return Optional.empty();
+        }
+
+        @Override
+        public URI uri() {
+            return URI.create("https://m.avito.ru/api/16/items/d?key=af0deccbgcgidddjgnvljitntccdduijhdinfgjgfjir");
+        }
+
+        @Override
+        public HttpClient.Version version() {
+            return HttpClient.Version.HTTP_1_1;
+        }
+    };
 }

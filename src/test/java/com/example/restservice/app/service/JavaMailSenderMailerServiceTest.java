@@ -5,10 +5,10 @@ import com.example.restservice.app.events.event.OnNewItemSubscriptionEvent;
 import com.example.restservice.app.model.Item;
 import com.example.restservice.app.model.Subscription;
 import com.example.restservice.app.model.User;
+import com.example.restservice.app.service.mock.MockJavaMailSender;
 import com.example.restservice.inrostructure.config.Config;
 import org.junit.jupiter.api.Test;
 import org.springframework.mail.SimpleMailMessage;
-import org.springframework.mail.javamail.JavaMailSender;
 
 import java.math.BigInteger;
 import java.util.Objects;
@@ -17,7 +17,7 @@ import static org.junit.jupiter.api.Assertions.assertEquals;
 
 class JavaMailSenderMailerServiceTest {
     @Test
-    public void netItem() {
+    void netItem() {
         final MockJavaMailSender javaMailSender = new MockJavaMailSender();
 
         final JavaMailSenderMailerService mailerService = new JavaMailSenderMailerService(javaMailSender);
@@ -35,7 +35,7 @@ class JavaMailSenderMailerServiceTest {
     }
 
     @Test
-    public void priceUpdate() {
+    void priceUpdate() {
         final MockJavaMailSender javaMailSender = new MockJavaMailSender();
 
         final JavaMailSenderMailerService mailerService = new JavaMailSenderMailerService(javaMailSender);
@@ -53,5 +53,4 @@ class JavaMailSenderMailerServiceTest {
         assertEquals("Item Price Update", message.getSubject());
         assertEquals(text, message.getText());
     }
-
 }

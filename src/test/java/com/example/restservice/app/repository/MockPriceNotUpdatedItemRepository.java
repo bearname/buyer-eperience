@@ -4,9 +4,7 @@ import com.example.restservice.app.model.Item;
 
 import java.util.Optional;
 
-import static org.junit.jupiter.api.Assertions.fail;
-
-public class MockPriceNotUpdatedItemRepository implements ItemRepository{
+public class MockPriceNotUpdatedItemRepository implements ItemRepository {
 
     @Override
     public <S extends Item> S save(S entity) {
@@ -15,7 +13,6 @@ public class MockPriceNotUpdatedItemRepository implements ItemRepository{
 
     @Override
     public <S extends Item> Iterable<S> saveAll(Iterable<S> entities) {
-//        fail();
         return null;
     }
 

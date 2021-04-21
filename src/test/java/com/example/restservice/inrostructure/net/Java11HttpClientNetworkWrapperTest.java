@@ -2,16 +2,15 @@ package com.example.restservice.inrostructure.net;
 
 import org.junit.jupiter.api.Test;
 
-import java.util.Optional;
+import java.net.http.HttpResponse;
 
-import static org.junit.jupiter.api.Assertions.*;
+import static org.junit.jupiter.api.Assertions.assertNotNull;
 
 class Java11HttpClientNetworkWrapperTest {
     @Test
-    public void test() {
-        final Optional<String> status_code = new Java11HttpClientNetworkWrapper().doGet("https://google.com").headers().firstValue("Status Code");
-        assertTrue(true);
-//        assertTrue(status_code.isPresent());
+    void test() {
+        final Java11HttpClientNetworkWrapper java11HttpClientNetworkWrapper = new Java11HttpClientNetworkWrapper();
+        final HttpResponse<String> stringHttpResponse = java11HttpClientNetworkWrapper.doGet("https://google.com");
+        assertNotNull(stringHttpResponse);
     }
-
 }

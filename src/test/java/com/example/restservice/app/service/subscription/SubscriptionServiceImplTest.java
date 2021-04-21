@@ -27,7 +27,6 @@ import java.util.ArrayList;
 import java.util.Optional;
 import java.util.UUID;
 
-import static com.example.restservice.app.repository.MockSubscriptionRepository.ITEMS;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.doNothing;
 import static org.mockito.Mockito.when;
@@ -35,7 +34,7 @@ import static org.mockito.Mockito.when;
 class SubscriptionServiceImplTest {
 
     @Test
-    public void failedGetNewPrice() {
+    void failedGetNewPrice() {
         final AvitoBaseException aviatorApiException = new AvitoBaseException("Avito Api excpetion");
         try {
             final String subscriptionUrl = "https://www.avito.ru/kazan/tovary_dlya_kompyutera/asus_gaming_vg248qg_2112597286";
@@ -56,20 +55,19 @@ class SubscriptionServiceImplTest {
         } catch (AvitoBaseException exception) {
             assertEquals(aviatorApiException.getMessage(), exception.getMessage());
         } catch (Exception exception) {
-            exception.printStackTrace();
             fail();
         }
     }
 
     @Test
-    public void failedGetNewPrice1() {
+    void failedGetNewPrice1() {
         try {
             final String subscriptionUrl = "https://www.avito.ru/kazan/tovary_dlya_kompyutera/asus_gaming_vg248qg_2112597286";
             final String userEmail = "test@mail.com";
             final String itemId = "2112597286";
 
             AvitoClient avitoClient = Mockito.mock(AvitoClient.class);
-            when(avitoClient.getActualPrice(itemId, Config.AVITO_MOBILE_API_KEY)).thenThrow(new Exception("failed"));
+            when(avitoClient.getActualPrice(itemId, Config.AVITO_MOBILE_API_KEY)).thenThrow(new AvitoBaseException("failed"));
 
             ItemRepository itemRepository = Mockito.mock(ItemRepository.class);
             UserRepository userRepository = Mockito.mock(UserRepository.class);
@@ -81,13 +79,12 @@ class SubscriptionServiceImplTest {
             final String actual = subscriptionService.subscribe(userEmail, subscriptionUrl, host);
             assertEquals("failed", actual);
         } catch (Exception exception) {
-            exception.printStackTrace();
             fail();
         }
     }
 
     @Test
-    public void subscriptionAlreadyExistsAndNotNeedConfirmSubscription() {
+    void subscriptionAlreadyExistsAndNotNeedConfirmSubscription() {
         try {
             final String subscriptionUrl = "https://www.avito.ru/kazan/tovary_dlya_kompyutera/asus_gaming_vg248qg_2112597286";
             final String userEmail = "test@mail.com";
@@ -113,20 +110,19 @@ class SubscriptionServiceImplTest {
             when(subscriptionRepository.findByItemIdAndUserId(item.getId(), user.getId())).thenReturn(subscription);
 
             SubscriptionService subscriptionService = new SubscriptionServiceImpl(applicationEventPublisher, userRepository, itemRepository, subscriptionRepository, avitoClient);
+
             final String host = "localhost";
             final String actual = subscriptionService.subscribe("test@mail.com", subscriptionUrl, host);
             final String expected = "Subscription already exists.";
-            System.out.println("expected: " + expected);
-            System.out.println("actual: " + actual);
+
             assertEquals(expected, actual);
         } catch (Exception exception) {
-            exception.printStackTrace();
             fail();
         }
     }
 
     @Test
-    public void subscriptionAlreadyExistsAndNeedConfirmSubscription() {
+    void subscriptionAlreadyExistsAndNeedConfirmSubscription() {
         try {
             final String itemUrl = "https://www.avito.ru/kazan/tovary_dlya_kompyutera/asus_gaming_vg248qg_2112597286";
             final String userEmail = "test@mail.com";
@@ -154,17 +150,15 @@ class SubscriptionServiceImplTest {
             final String host = "localhost";
             final String actual = subscriptionService.subscribe("test@mail.com", itemUrl, host);
             final String expected = "Subscription already exists. PLease confirm your subscription " + OnNewSubscriptionListener.getConfirmationUrl(subscription, host);
-            System.out.println("expected: " + expected);
-            System.out.println("actual: " + actual);
+
             assertEquals(expected, actual);
         } catch (Exception exception) {
-            exception.printStackTrace();
             fail();
         }
     }
 
     @Test
-    public void itsNewSubscription() {
+    void itsNewSubscription() {
         try {
             final String itemUrl = "https://www.avito.ru/kazan/tovary_dlya_kompyutera/asus_gaming_vg248qg_2112597286";
             final String userEmail = "test@mail.com";
@@ -191,17 +185,15 @@ class SubscriptionServiceImplTest {
             SubscriptionService subscriptionService = new SubscriptionServiceImpl(eventPublisher, userRepository, itemRepository, subscriptionRepository, avitoClient);
             final String actual = subscriptionService.subscribe("test@mail.com", itemUrl, host);
             final String expected = userEmail + " " + itemUrl + " " + itemId;
-            System.out.println("expected: " + expected);
-            System.out.println("actual: " + actual);
+
             assertEquals(expected, actual);
         } catch (Exception exception) {
-            exception.printStackTrace();
             fail();
         }
     }
 
     @Test
-    public void itsNewSubscription1() {
+    void itsNewSubscription1() {
         try {
             final String itemUrl = "https://www.avito.ru/kazan/tovary_dlya_kompyutera/asus_gaming_vg248qg_2112597286";
             final String userEmail = "test@mail.com";
@@ -230,17 +222,15 @@ class SubscriptionServiceImplTest {
             SubscriptionService subscriptionService = new SubscriptionServiceImpl(eventPublisher, userRepository, itemRepository, subscriptionRepository, avitoClient);
             final String actual = subscriptionService.subscribe("test@mail.com", itemUrl, host);
             final String expected = userEmail + " " + itemUrl + " " + itemId;
-            System.out.println("expected: " + expected);
-            System.out.println("actual: " + actual);
+
             assertEquals(expected, actual);
         } catch (Exception exception) {
-            exception.printStackTrace();
             fail();
         }
     }
 
     @Test
-    public void itsNewSubscription2() {
+    void itsNewSubscription2() {
         try {
             final String itemUrl = "https://www.avito.ru/kazan/tovary_dlya_kompyutera/asus_gaming_vg248qg_2112597286";
             final String userEmail = "test@mail.com";
@@ -269,17 +259,15 @@ class SubscriptionServiceImplTest {
             SubscriptionService subscriptionService = new SubscriptionServiceImpl(eventPublisher, userRepository, itemRepository, subscriptionRepository, avitoClient);
             final String actual = subscriptionService.subscribe("test@mail.com", itemUrl, host);
             final String expected = userEmail + " " + itemUrl + " " + itemId;
-            System.out.println("expected: " + expected);
-            System.out.println("actual: " + actual);
+
             assertEquals(expected, actual);
         } catch (Exception exception) {
-            exception.printStackTrace();
             fail();
         }
     }
 
     @Test
-    public void resubscribe() {
+    void resubscribe() {
         try {
             final String subscriptionUrl = "https://www.avito.ru/kazan/tovary_dlya_kompyutera/asus_gaming_vg248qg_2112597286";
             final String userEmail = "test@mail.com";
@@ -306,17 +294,15 @@ class SubscriptionServiceImplTest {
             final String host = "localhost";
             final String actual = subscriptionService.subscribe("test@mail.com", subscriptionUrl, host);
             final String expected = "your resubscribe";
-            System.out.println("expected: " + expected);
-            System.out.println("actual: " + actual);
+
             assertEquals(expected, actual);
         } catch (Exception exception) {
-            exception.printStackTrace();
             fail();
         }
     }
 
     @Test
-    public void unsubscribeUnknownUser() {
+    void unsubscribeUnknownUser() {
         try {
             final String itemId = "2112597286";
 
@@ -337,7 +323,7 @@ class SubscriptionServiceImplTest {
     }
 
     @Test
-    public void unsubscribe() {
+    void unsubscribe() {
         try {
             final String itemUrl = "https://www.avito.ru/kazan/tovary_dlya_kompyutera/asus_gaming_vg248qg_2112597286";
             final String userEmail = "test@mail.com";
@@ -366,13 +352,12 @@ class SubscriptionServiceImplTest {
             final boolean unsubscribe = subscriptionService.unsubscribe(itemId, 1L);
             assertTrue(unsubscribe);
         } catch (Exception exception) {
-            exception.printStackTrace();
             fail();
         }
     }
 
     @Test
-    public void confirmSubscriptionEmailUnknownSubscription() {
+    void confirmSubscriptionEmailUnknownSubscription() {
         try {
             final String itemUrl = "https://www.avito.ru/kazan/tovary_dlya_kompyutera/asus_gaming_vg248qg_2112597286";
             final String userEmail = "test@mail.com";
@@ -404,7 +389,7 @@ class SubscriptionServiceImplTest {
     }
 
     @Test
-    public void invalidVerificationCode() {
+    void invalidVerificationCode() {
         try {
             final String itemUrl = "https://www.avito.ru/kazan/tovary_dlya_kompyutera/asus_gaming_vg248qg_2112597286";
             final String userEmail = "test@mail.com";
@@ -433,12 +418,11 @@ class SubscriptionServiceImplTest {
             assertFalse(unsubscribe);
         } catch (Exception exception) {
             fail();
-            exception.printStackTrace();
         }
     }
 
     @Test
-    public void subscriptionAlreadyVerified() {
+    void subscriptionAlreadyVerified() {
         try {
             final String itemUrl = "https://www.avito.ru/kazan/tovary_dlya_kompyutera/asus_gaming_vg248qg_2112597286";
             final String userEmail = "test@mail.com";
@@ -468,7 +452,7 @@ class SubscriptionServiceImplTest {
     }
 
     @Test
-    public void successConfirmation() {
+    void successConfirmation() {
         try {
             final String itemUrl = "https://www.avito.ru/kazan/tovary_dlya_kompyutera/asus_gaming_vg248qg_2112597286";
             final String userEmail = "test@mail.com";
@@ -496,14 +480,13 @@ class SubscriptionServiceImplTest {
             final boolean unsubscribe = subscriptionService.confirmSubscription(itemId, subscription.getVerificationCode(), BigInteger.valueOf(1L));
             assertTrue(unsubscribe);
         } catch (Exception exception) {
-            exception.printStackTrace();
             fail();
         }
     }
 
 
     @Test
-    public void getUserSubscriptionsByUnknownUserId() {
+    void getUserSubscriptionsByUnknownUserId() {
         try {
             final String itemId = "2112597286";
 
@@ -524,8 +507,9 @@ class SubscriptionServiceImplTest {
             assertEquals("Unknown user with id 1", exception.getMessage());
         }
     }
+
     @Test
-    public void getUserSubscriptions() {
+    void getUserSubscriptions() {
         try {
             final String itemId = "2112597286";
 
@@ -536,7 +520,7 @@ class SubscriptionServiceImplTest {
             final long userId = 1L;
             final User user = new User(1L, "test@mail.com");
             final BigInteger id = BigInteger.valueOf(userId);
-            when(userRepository.findById(id)).thenReturn( Optional.of(user));
+            when(userRepository.findById(id)).thenReturn(Optional.of(user));
 
             SubscriptionRepository subscriptionRepository = Mockito.mock(SubscriptionRepository.class);
             final int page = 0;

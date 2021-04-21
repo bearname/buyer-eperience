@@ -8,7 +8,7 @@ import org.springframework.data.domain.Sort;
 import java.math.BigInteger;
 import java.util.Optional;
 
-public class  MockUserRepositoryExistUser implements UserRepository {
+public class MockUserRepositoryExistUser implements UserRepository {
     @Override
     public boolean existsByEmail(String email) {
         return true;
@@ -27,7 +27,6 @@ public class  MockUserRepositoryExistUser implements UserRepository {
     @Override
     public User getByEmail(String email) {
         return new User(email);
-//        return new User(BigInteger.valueOf(1L), email, false);
     }
 
     @Override

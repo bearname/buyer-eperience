@@ -7,17 +7,17 @@ import static org.junit.jupiter.api.Assertions.assertNotEquals;
 
 class SubscriptionTest {
     @Test
-    public void test() {
+    void test() {
 
         final User user = new User(1L, "test@mail.ru");
         final Item item = new Item();
         final Subscription subscription = new Subscription(item, user);
         final Subscription subscription1 = new Subscription(item, user);
-        assertNotEquals(subscription1, subscription);
+        assertEquals(subscription1, subscription);
     }
 
     @Test
-    public void test1() {
+    void test1() {
         final User user = new User(1L, "test@mail.ru");
         final User user1 = new User(2L, "test@mail.ru");
         final Item item = new Item();
@@ -27,7 +27,7 @@ class SubscriptionTest {
     }
 
     @Test
-    public void test2() {
+    void test2() {
         final User user = new User(1L, "test@mail.ru");
         final User user1 = new User(2L, "test@mail.ru");
         final Item item = new Item();
@@ -39,7 +39,7 @@ class SubscriptionTest {
     }
 
     @Test
-    public void test3() {
+    void test3() {
         final User user = new User(1L, "test@mail.ru");
         final User user1 = new User(2L, "test@mail.ru");
         final Item item = new Item();
@@ -50,7 +50,7 @@ class SubscriptionTest {
     }
 
     @Test
-    public void testToString() {
+    void testToString() {
         final User user = new User(1L, "test@mail.ru");
         final Item item = new Item("23", 23, "https://avito.url.com/asdf?sadfasdf=asdf");
         final Subscription subscription = new Subscription(item, user);

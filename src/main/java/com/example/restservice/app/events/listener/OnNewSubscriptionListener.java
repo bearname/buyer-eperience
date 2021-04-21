@@ -11,7 +11,6 @@ import org.springframework.stereotype.Component;
 @Component
 public class OnNewSubscriptionListener implements ApplicationListener<OnNewItemSubscriptionEvent> {
 
-    //    private static final Logger log = LoggerFactory.getLogger(MailerService.class);
     private final MailService mailerService;
 
     @Autowired
@@ -29,7 +28,6 @@ public class OnNewSubscriptionListener implements ApplicationListener<OnNewItemS
         Subscription subscription = event.getSubscription();
         String confirmationUrl = getConfirmationUrl(subscription, event.getDomain());
         mailerService.send(event, message + "\r\n" + confirmationUrl);
-        System.out.println("confirmation url: " + confirmationUrl);
     }
 
     public static String getConfirmationUrl(final Subscription subscription, final String domain) {

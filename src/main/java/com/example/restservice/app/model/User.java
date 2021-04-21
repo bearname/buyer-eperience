@@ -1,12 +1,13 @@
 package com.example.restservice.app.model;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.math.BigInteger;
 import java.util.Set;
 
 @Entity
 @Table(name = "users")
-public class User {
+public class User implements Serializable {
     @Id
     @GeneratedValue
     private BigInteger id;
@@ -53,7 +54,6 @@ public class User {
     public boolean isVerified() {
         return isVerified;
     }
-
 
     public void toggleVerified() {
         this.isVerified = !this.isVerified;

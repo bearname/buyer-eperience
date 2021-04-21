@@ -1,26 +1,19 @@
 package com.example.restservice.app.controller;
 
+import com.example.restservice.app.exception.SubscriptionException;
 import com.example.restservice.app.model.Item;
 import com.example.restservice.app.model.Subscription;
 import com.example.restservice.app.model.User;
-import com.example.restservice.app.repository.ItemRepository;
-import com.example.restservice.app.repository.SubscriptionRepository;
-import com.example.restservice.app.repository.UserRepository;
 import com.example.restservice.app.service.SubscriptionService;
-import com.example.restservice.inrostructure.net.avitoclient.AvitoClient;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
-import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
-import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.http.MediaType;
 import org.springframework.test.context.TestPropertySource;
-import org.springframework.test.context.jdbc.Sql;
-import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.math.BigInteger;
@@ -53,15 +46,15 @@ class SubscriptionControllerTest {
     public static final PageImpl<Subscription> EMPTY = new PageImpl<>(new ArrayList<>());
 
     @Test
-    public void noParamGreetingShouldReturnNotFound() throws Exception {
-        when(subscriptionService.getUserSubscriptions(1L, 0, 10)).thenThrow(new Exception("Unknown user"));
+    void noParamGreetingShouldReturnNotFound() throws Exception {
+        when(subscriptionService.getUserSubscriptions(1L, 0, 10)).thenThrow(new SubscriptionException("Unknown user"));
 
         this.mockMvc.perform(get("/api/v1/items/1"))
                 .andExpect(status().isNotFound());
     }
 
     @Test
-    public void hasInvalidPageParameterValue() throws Exception {
+    void hasInvalidPageParameterValue() throws Exception {
         when(subscriptionService.getUserSubscriptions(1L, 0, 10)).thenReturn(EMPTY);
 
         this.mockMvc.perform(get("/api/v1/items/1?page=ASDf"))
@@ -69,7 +62,7 @@ class SubscriptionControllerTest {
     }
 
     @Test
-    public void hasInvalidPageParameterValue1() throws Exception {
+    void hasInvalidPageParameterValue1() throws Exception {
         final long userId = 1L;
         when(subscriptionService.getUserSubscriptions(userId, 0, 10)).thenReturn(EMPTY);
 
@@ -81,7 +74,7 @@ class SubscriptionControllerTest {
     }
 
     @Test
-    public void hasInvalidLimitParameterValue() throws Exception {
+    void hasInvalidLimitParameterValue() throws Exception {
         when(subscriptionService.getUserSubscriptions(1L, 0, 10)).thenReturn(EMPTY);
 
         this.mockMvc.perform(get("/api/v1/items/1?limit=ASDf"))
@@ -89,11 +82,25 @@ class SubscriptionControllerTest {
     }
 
     @Test
-    public void pageParameterLessThanZero() throws Exception {
+    void pageParameterLessThanZero() throws Exception {
+        failedUnsubscribe("?page=-1");
+    }
+
+    @Test
+    void limitParameterLessThanZero() throws Exception {
+        failedUnsubscribe("?limit=-1");
+    }
+
+    @Test
+    void notHaveSubscription() throws Exception {
+        failedUnsubscribe("?limit=-1");
+    }
+
+    private void failedUnsubscribe(String s) throws Exception {
         when(subscriptionService.getUserSubscriptions(1L, 0, 10)).thenReturn(EMPTY);
 
         final int userId = 1;
-        this.mockMvc.perform(get("/api/v1/items/" + userId + "?limit=-1"))
+        this.mockMvc.perform(get("/api/v1/items/" + userId + s))
                 .andExpect(status().isOk()).andExpect(content().contentType(MediaType.APPLICATION_JSON))
                 .andExpect(jsonPath("$.success", is(true)))
                 .andExpect(jsonPath("$.userId", is(userId)))
@@ -102,21 +109,7 @@ class SubscriptionControllerTest {
     }
 
     @Test
-    public void notHaveSubscription() throws Exception {
-        when(subscriptionService.getUserSubscriptions(1L, 0, 10)).thenReturn(EMPTY);
-
-        final int userId = 1;
-        this.mockMvc.perform(get("/api/v1/items/" + userId + "?limit=-1"))
-                .andExpect(status().isOk())
-                .andExpect(content().contentType(MediaType.APPLICATION_JSON))
-                .andExpect(jsonPath("$.success", is(true)))
-                .andExpect(jsonPath("$.userId", is(userId)))
-                .andExpect(jsonPath("$.subscriptions.content", hasSize(0)))
-                .andReturn();
-    }
-
-    @Test
-    public void haveSubscriptionMoreThanZero() throws Exception {
+    void haveSubscriptionMoreThanZero() throws Exception {
         final User user = new User(1L, "test@mail.com");
         final ArrayList<Subscription> subscriptions1 = new ArrayList<>();
         final Item item = new Item("2112597286", 50000, "https://www.avito.ru/kazan/tovary_dlya_kompyutera/asus_gaming_vg248qg_2112597286");
@@ -141,8 +134,7 @@ class SubscriptionControllerTest {
     }
 
     @Test
-    public void emptyBody() throws Exception {
-
+    void emptyBody() throws Exception {
         mockMvc.perform(post("/api/v1/items/subscribe")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(""))
@@ -151,7 +143,7 @@ class SubscriptionControllerTest {
     }
 
     @Test
-    public void emptyJson() throws Exception {
+    void emptyJson() throws Exception {
         mockMvc.perform(post("/api/v1/items/subscribe")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{}"))
@@ -165,7 +157,7 @@ class SubscriptionControllerTest {
     }
 
     @Test
-    public void notHaveRequiredParamter() throws Exception {
+    void notHaveRequiredParameter() throws Exception {
         mockMvc.perform(post("/api/v1/items/subscribe")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{\"userName\": \"application123\"}"))
@@ -180,7 +172,7 @@ class SubscriptionControllerTest {
     }
 
     @Test
-    public void invalidEmail() throws Exception {
+    void invalidEmail() throws Exception {
         mockMvc.perform(post("/api/v1/items/subscribe")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{\"email\": \"notemail\"}"))
@@ -192,7 +184,7 @@ class SubscriptionControllerTest {
     }
 
     @Test
-    public void haveOnlyValidEmailParameter() throws Exception {
+    void haveOnlyValidEmailParameter() throws Exception {
         mockMvc.perform(post("/api/v1/items/subscribe")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{\"email\": \"ya.mikushoff@gmail.com\"}"))
@@ -204,7 +196,7 @@ class SubscriptionControllerTest {
     }
 
     @Test
-    public void validEmailAndInvalidUrl() throws Exception {
+    void validEmailAndInvalidUrl() throws Exception {
         mockMvc.perform(post("/api/v1/items/subscribe")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{\"email\": \"ya.mikushoff@gmail.com\", \"url\": \"https\"}"))
@@ -216,7 +208,7 @@ class SubscriptionControllerTest {
     }
 
     @Test
-    public void onlyValidUrl() throws Exception {
+    void onlyValidUrl() throws Exception {
         mockMvc.perform(post("/api/v1/items/subscribe")
                 .contentType(MediaType.APPLICATION_JSON)
                 .content("{\"url\": \"https://www.avito.ru/kazan/tovary_dlya_kompyutera/asus_gaming_vg248qg_2112597286\"}"))
@@ -226,7 +218,7 @@ class SubscriptionControllerTest {
     }
 
     @Test
-    public void valid() throws Exception {
+    void valid() throws Exception {
         final User user = new User(1L, "test@mail.com");
         final ArrayList<Subscription> subscriptions1 = new ArrayList<>();
         final Item item = new Item("2112597286", 50000, "https://www.avito.ru/kazan/tovary_dlya_kompyutera/asus_gaming_vg248qg_2112597286");
@@ -251,7 +243,7 @@ class SubscriptionControllerTest {
     }
 
     @Test
-    public void failedUnsubscribe() throws Exception {
+    void failedUnsubscribe() throws Exception {
         when(subscriptionService.unsubscribe("1", 1)).thenReturn(false);
 
         mockMvc.perform(post("/api/v1/items/1/1/unsubscribe"))
@@ -263,7 +255,7 @@ class SubscriptionControllerTest {
     }
 
     @Test
-    public void successUnsubscribe() throws Exception {
+    void successUnsubscribe() throws Exception {
         when(subscriptionService.unsubscribe("1", 1)).thenReturn(true);
 
         mockMvc.perform(post("/api/v1/items/1/1/unsubscribe"))
@@ -275,7 +267,7 @@ class SubscriptionControllerTest {
     }
 
     @Test
-    public void confirmWithoutVerificationCode() throws Exception {
+    void confirmWithoutVerificationCode() throws Exception {
         final String verificationCode = UUID.randomUUID().toString();
         when(subscriptionService.confirmSubscription("1", verificationCode, BigInteger.valueOf(1))).thenReturn(false);
 
@@ -285,7 +277,7 @@ class SubscriptionControllerTest {
     }
 
     @Test
-    public void invalidVerificationCode() throws Exception {
+    void invalidVerificationCode() throws Exception {
         final String verificationCode = UUID.randomUUID().toString();
         when(subscriptionService.confirmSubscription("1", verificationCode, BigInteger.valueOf(1))).thenReturn(false);
 
@@ -297,33 +289,10 @@ class SubscriptionControllerTest {
                 .andReturn();
     }
 
-    class MockService implements SubscriptionService {
-
-        @Override
-        public String subscribe(String email, String itemUrl, String host) {
-            return null;
-        }
-
-        @Override
-        public boolean unsubscribe(String itemId, long userId) throws Exception {
-            return false;
-        }
-
-        @Override
-        public boolean confirmSubscription(String itemId, String verificationCode, BigInteger userId) throws Exception {
-            return false;
-        }
-
-        @Override
-        public Page<Subscription> getUserSubscriptions(Long userId, Integer page, Integer limit) throws Exception {
-            return null;
-        }
-    }
-
     @Test
-    public void unknownSubscription() throws Exception {
+    void unknownSubscription() throws Exception {
         final String verificationCode = UUID.randomUUID().toString();
-        when(subscriptionService.confirmSubscription("1", verificationCode, BigInteger.valueOf(1))).thenThrow(new Exception("Unknown exception"));
+        when(subscriptionService.confirmSubscription("1", verificationCode, BigInteger.valueOf(1))).thenThrow(new SubscriptionException("Unknown exception"));
 
         mockMvc.perform(get("/api/v1/items/1/1/confirm?verificationCode=" + verificationCode))
                 .andExpect(status().isOk())
@@ -334,7 +303,7 @@ class SubscriptionControllerTest {
     }
 
     @Test
-    public void validConfirmation() throws Exception {
+    void validConfirmation() throws Exception {
         final String verificationCode = UUID.randomUUID().toString();
         when(subscriptionService.confirmSubscription("1", verificationCode, BigInteger.valueOf(1))).thenReturn(true);
 
@@ -345,6 +314,4 @@ class SubscriptionControllerTest {
                 .andExpect(jsonPath("$.message", is("Success verified your email")))
                 .andReturn();
     }
-
-
 }

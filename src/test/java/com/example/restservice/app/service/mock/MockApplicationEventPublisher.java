@@ -1,4 +1,4 @@
-package com.example.restservice.app.service;
+package com.example.restservice.app.service.mock;
 
 import org.springframework.context.ApplicationEvent;
 import org.springframework.context.ApplicationEventPublisher;

@@ -1,12 +1,13 @@
 package com.example.restservice.app.model;
 
 import javax.persistence.*;
+import java.io.Serializable;
 import java.util.Objects;
 import java.util.UUID;
 
 @Entity
 //@Table(uniqueConstraints = @UniqueConstraint(columnNames = {"item_id, user_id"}))
-public final class Subscription {
+public final class Subscription implements Serializable {
     @Id
     @GeneratedValue
     private Long id;
@@ -89,7 +90,7 @@ public final class Subscription {
         if (o == null || getClass() != o.getClass()) return false;
         Subscription that = (Subscription) o;
 
-        return this.getItem().getId().equals(that.getItem().getId()) && this.getUser().getId().equals(that.getItem().getId());
+        return this.getItem().getId().equals(that.getItem().getId()) && this.getUser().getId().equals(that.getUser().getId());
     }
 
     @Override

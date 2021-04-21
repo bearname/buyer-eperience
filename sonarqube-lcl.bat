@@ -1,0 +1,1 @@
+gradlew sonarqube -Dsonar.projectKey=buyer   -Dsonar.host.url=http://localhost:9000   -Dsonar.login=0cb24ee7c70f4f76e31c78f80ecd34c86aeb99df
