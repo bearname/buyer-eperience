@@ -19,6 +19,8 @@ services:
     environment:
       - POSTGRES_USER=compose-postgres
       - POSTGRES_PASSWORD=compose-postgres
+    volumes:
+      - buyer-data:/var/lib/postgres
   nginx:
     image: nginx:latest
     volumes:
@@ -27,3 +29,5 @@ services:
       - app
     ports:
       - "4000:4000"
+volumes:
+  buyer-data:
